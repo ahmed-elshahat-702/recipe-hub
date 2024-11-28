@@ -1,0 +1,60 @@
+"use client";
+
+import { RecipeCard } from "@/components/recipes/recipe-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { type Recipe } from "@/lib/types/recipe";
+
+function RecipeCardSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="aspect-video rounded-lg shadow-sm" />
+      <Skeleton className="h-4 rounded-lg w-3/4 shadow-sm" />
+      <Skeleton className="h-4 rounded-lg w-1/2 shadow-sm" />
+    </div>
+  );
+}
+
+export default function RecipesPage() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  async function fetchRecipes() {
+    try {
+      const response = await axios.get("/api/recipes");
+      const data = response.data;
+      setRecipes(data.recipes);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
+
+  return (
+    <div className="container py-16 space-y-12">
+      {/* Header Section */}
+      <h2 className="text-4xl font-extrabold tracking-tight text-center md:text-5xl">
+        Latest Recipes
+      </h2>
+      <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">
+        Discover new, delicious recipes created by chefs and cooking enthusiasts
+        from around the world.
+      </p>
+
+      {/* Recipes Grid */}
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {recipes.length > 0
+          ? recipes.map((recipe) => (
+              <RecipeCard key={recipe._id} recipe={recipe} />
+            ))
+          : Array.from({ length: 10 }).map((_, index) => (
+              <RecipeCardSkeleton key={index} />
+            ))}
+      </div>
+    </div>
+  );
+}
