@@ -1,20 +1,10 @@
 "use client";
 
 import { RecipeCard } from "@/components/recipes/recipe-card";
-import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { type Recipe } from "@/lib/types/recipe";
-
-function RecipeCardSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton className="aspect-video rounded-lg shadow-sm" />
-      <Skeleton className="h-4 rounded-lg w-3/4 shadow-sm" />
-      <Skeleton className="h-4 rounded-lg w-1/2 shadow-sm" />
-    </div>
-  );
-}
+import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);

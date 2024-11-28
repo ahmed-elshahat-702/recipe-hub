@@ -12,10 +12,20 @@ import {
 } from "./ui/dropdown-menu";
 import { CookingPot, Search, User } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
+import { useEffect, useState } from "react";
 
 export function Navigation() {
   const { data: session, status } = useSession();
-  const isLoading = status === "loading";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render a simplified version during SSR
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <nav className="border-b">
@@ -45,10 +55,10 @@ export function Navigation() {
 
           <div className="flex items-center space-x-4">
             <ModeToggle />
-            {isLoading ? (
+            {status === "loading" ? (
               <Button
                 variant="ghost"
-                className="relative h-8 w-8 rounded-full bg-foreground"
+                className="relative h-8 w-8 rounded-full"
                 disabled
               >
                 <span className="sr-only">Loading</span>
@@ -65,13 +75,15 @@ export function Navigation() {
                         src={session.user?.image || ""}
                         alt={session.user?.name || ""}
                       />
-                      <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
+                      <AvatarFallback>
+                        {session.user?.name?.[0] || "?"}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href="/profile" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>

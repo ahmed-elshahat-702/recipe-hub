@@ -4,7 +4,11 @@ import { RecipeDetails } from "@/components/recipes/recipe-details";
 import { RecipeDetailsSkeleton } from "@/components/recipes/recipe-details-skeleton";
 import axios from "axios";
 
-export default function RecipePage({ params }: { params: Promise<{ id: string }> }) {
+export default function RecipePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [recipe, setRecipe] = useState(null);
   const resolvedParams = use(params);
 

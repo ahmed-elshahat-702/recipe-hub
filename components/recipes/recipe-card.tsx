@@ -21,7 +21,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             />
           ) : (
             <Image
-              src={"/images/recipe-placeholder.jpg"}
+              src={"/recipe-placeholder.jpg"}
               alt={recipe.title}
               fill
               className="object-cover"
