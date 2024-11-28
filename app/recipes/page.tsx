@@ -14,7 +14,6 @@ export default function RecipesPage() {
       const response = await axios.get("/api/recipes");
       const data = response.data;
       setRecipes(data.recipes);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching recipes:", error);
     }

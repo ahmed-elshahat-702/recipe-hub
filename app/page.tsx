@@ -16,13 +16,13 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-4">
             <Link href="/recipes/create" className="inline-flex">
-              <Button size="lg">
+              <Button className="w-40 sm:w-56 lg:w-60">
                 <CookingPot className="mr-2 h-5 w-5" />
                 Share a Recipe
               </Button>
             </Link>
             <Link href="/recipes" className="inline-flex">
-              <Button variant="outline" size="lg">
+              <Button variant="outline" className="w-40 sm:w-56 lg:w-60">
                 <Utensils className="mr-2 h-5 w-5" />
                 Explore Recipes
               </Button>
