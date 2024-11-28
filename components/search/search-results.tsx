@@ -62,7 +62,8 @@ export async function SearchResults({
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold mb-4">No recipes found</h2>
         <p className="text-muted-foreground mb-6">
-          Try adjusting your search or filter to find what you're looking for
+          Try adjusting your search or filter to find what you&apos;re looking
+          for
         </p>
         <Button asChild>
           <Link href="/recipes">Browse all recipes</Link>

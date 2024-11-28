@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecipeForm } from "@/components/recipes/recipe-form";
+import { authOptions } from "@/app/api/auth/auth-options";
 
 export default async function CreateRecipePage() {
   const session = await getServerSession(authOptions);

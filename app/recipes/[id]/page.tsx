@@ -19,7 +19,7 @@ export default function RecipePage({
 
   useEffect(() => {
     fetchRecipe();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="container py-8">

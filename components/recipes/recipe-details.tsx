@@ -76,15 +76,19 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
           <section className="bg-card rounded-lg shadow-sm p-4">
             <h2 className="text-lg font-semibold mb-2">Categories</h2>
             <div className="flex flex-wrap gap-1">
-              {recipe.categories.map((category) => (
-                <Badge
-                  key={category}
-                  variant="secondary"
-                  className="text-xs px-2 py-0.5"
-                >
-                  {category}
-                </Badge>
-              ))}
+              {recipe.categories && recipe.categories.length > 0 ? (
+                recipe.categories.map((category) => (
+                  <Badge
+                    key={category}
+                    variant="secondary"
+                    className="text-xs px-2 py-0.5"
+                  >
+                    {category}
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No categories</p>
+              )}
             </div>
           </section>
         </div>

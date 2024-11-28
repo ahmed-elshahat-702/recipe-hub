@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
 import { Recipe } from "@/lib/db/models/Recipe";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/auth-options";
 
 export async function GET(
   request: Request,

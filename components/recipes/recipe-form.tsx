@@ -3,7 +3,7 @@
 import { useState } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { Plus, Minus, Upload } from "lucide-react";
+import { Minus, Upload } from "lucide-react";
 
 export function RecipeForm() {
   const router = useRouter();
@@ -79,19 +79,13 @@ export function RecipeForm() {
     fields: ingredientFields,
     append: appendIngredient,
     remove: removeIngredient,
-  } = useFieldArray({
-    control: form.control,
-    name: "ingredients",
-  });
+  } = useFieldArray({ name: "ingredients" });
 
   const {
     fields: instructionFields,
     append: appendInstruction,
     remove: removeInstruction,
-  } = useFieldArray({
-    control: form.control,
-    name: "instructions",
-  });
+  } = useFieldArray({ name: "instructions" });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {

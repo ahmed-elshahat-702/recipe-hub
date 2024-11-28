@@ -3,11 +3,17 @@ import { SearchForm } from '@/components/search/search-form';
 import { SearchResults } from '@/components/search/search-results';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function SearchPage({
-  searchParams,
-}: {
-  searchParams: { query?: string; category?: string; page?: string };
-}) {
+interface SearchPageProps {
+  searchParams: Promise<{
+    query?: string;
+    category?: string;
+    page?: string;
+  }>;
+}
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const params = await searchParams;
+  
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">Search Recipes</h1>
@@ -22,9 +28,9 @@ export default function SearchPage({
         }
       >
         <SearchResults
-          query={searchParams.query}
-          category={searchParams.category}
-          page={searchParams.page}
+          query={params.query}
+          category={params.category}
+          page={params.page}
         />
       </Suspense>
     </div>
