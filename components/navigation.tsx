@@ -43,13 +43,13 @@ export function Navigation() {
               >
                 Recipes
               </Link>
-              <Link
+              {/* <Link
                 href="/search"
                 className="inline-flex items-center px-1 pt-1 text-sm font-medium"
               >
                 <Search className="h-4 w-4 mr-1" />
                 Search
-              </Link>
+              </Link> */}
             </div>
           </div>
 
