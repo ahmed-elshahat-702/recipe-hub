@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Navigation } from "@/components/navigation";
 import AuthProvider from "@/components/auth-provider";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "RecipeShare - Share Your Culinary Creations",
@@ -17,10 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className="bg-gradient-to-b from-background to-muted text-foreground"
+        className={cn(
+          "min-h-screen bg-gradient-to-b from-background to-muted text-foreground",
+          "antialiased"
+        )}
       >
         <ThemeProvider
           attribute="class"
@@ -30,7 +34,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Navigation />
-            <main className="min-h-screen max-sm:max-w-sm max-md:max-w-lg max-lg:max-w-2xl max-xl:max-w-4xl max-w-5xl mx-auto">
+            <main className="max-sm:max-w-sm max-md:max-w-lg max-lg:max-w-2xl max-xl:max-w-4xl max-w-5xl mx-auto">
               {children}
             </main>
             <Toaster />

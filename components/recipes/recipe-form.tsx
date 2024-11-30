@@ -3,7 +3,7 @@
 import { useState } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray, Control } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
@@ -74,18 +74,6 @@ export function RecipeForm() {
       categories: [],
     },
   });
-
-  const {
-    fields: ingredientFields,
-    append: appendIngredient,
-    remove: removeIngredient,
-  } = useFieldArray({ name: "ingredients" });
-
-  const {
-    fields: instructionFields,
-    append: appendInstruction,
-    remove: removeInstruction,
-  } = useFieldArray({ name: "instructions" });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -225,8 +213,8 @@ export function RecipeForm() {
         <div>
           <label className="block text-lg font-semibold">Ingredients</label>
           <div className="space-y-4 mt-4">
-            {ingredientFields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-4">
+            {form.watch("ingredients")?.map((_, index) => (
+              <div key={index} className="flex items-center gap-4">
                 <FormField
                   control={form.control}
                   name={`ingredients.${index}.name`}
@@ -249,9 +237,7 @@ export function RecipeForm() {
                           type="number"
                           placeholder="Amount"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -274,7 +260,11 @@ export function RecipeForm() {
                   type="button"
                   variant="destructive"
                   size="sm"
-                  onClick={() => removeIngredient(index)}
+                  onClick={() => {
+                    const ingredients = form.getValues("ingredients");
+                    ingredients.splice(index, 1);
+                    form.setValue("ingredients", ingredients);
+                  }}
                   className="px-3"
                 >
                   Remove
@@ -284,9 +274,10 @@ export function RecipeForm() {
             <Button
               type="button"
               size="sm"
-              onClick={() =>
-                appendIngredient({ name: "", amount: 0, unit: "" })
-              }
+              onClick={() => {
+                const ingredients = form.getValues("ingredients") || [];
+                form.setValue("ingredients", [...ingredients, { name: "", amount: 0, unit: "" }]);
+              }}
               className="mt-2"
             >
               Add Ingredient
@@ -298,8 +289,8 @@ export function RecipeForm() {
         <div>
           <label className="block text-lg font-semibold">Instructions</label>
           <div className="space-y-4 mt-4">
-            {instructionFields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-4">
+            {form.watch("instructions")?.map((_, index) => (
+              <div key={index} className="flex items-center gap-4">
                 <FormField
                   control={form.control}
                   name={`instructions.${index}`}
@@ -316,7 +307,11 @@ export function RecipeForm() {
                   type="button"
                   variant="destructive"
                   size="sm"
-                  onClick={() => removeInstruction(index)}
+                  onClick={() => {
+                    const instructions = form.getValues("instructions");
+                    instructions.splice(index, 1);
+                    form.setValue("instructions", instructions);
+                  }}
                   className="px-3"
                 >
                   Remove
@@ -326,7 +321,10 @@ export function RecipeForm() {
             <Button
               type="button"
               size="sm"
-              onClick={() => appendInstruction("")}
+              onClick={() => {
+                const instructions = form.getValues("instructions") || [];
+                form.setValue("instructions", [...instructions, ""]);
+              }}
               className="mt-2"
             >
               Add Instruction
