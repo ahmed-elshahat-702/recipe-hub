@@ -1,17 +1,8 @@
 import { Suspense } from "react";
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecipeForm } from "@/components/recipes/recipe-form";
-import { authOptions } from "@/app/api/auth/auth-options";
 
 export default async function CreateRecipePage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user) {
-    redirect("/auth/signin");
-  }
-
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">Create New Recipe</h1>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
@@ -237,7 +237,9 @@ export function RecipeForm() {
                           type="number"
                           placeholder="Amount"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -276,7 +278,10 @@ export function RecipeForm() {
               size="sm"
               onClick={() => {
                 const ingredients = form.getValues("ingredients") || [];
-                form.setValue("ingredients", [...ingredients, { name: "", amount: 0, unit: "" }]);
+                form.setValue("ingredients", [
+                  ...ingredients,
+                  { name: "", amount: 0, unit: "" },
+                ]);
               }}
               className="mt-2"
             >
