@@ -32,7 +32,7 @@ export default async function SignInPage() {
             Or{" "}
             <Link
               href="/auth/signup"
-              className="font-medium text-main hover:mainHover"
+              className="font-medium text-main hover:text-mainHover"
             >
               create a new account
             </Link>

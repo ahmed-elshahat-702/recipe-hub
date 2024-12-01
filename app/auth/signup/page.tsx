@@ -31,7 +31,7 @@ export default async function SignUpPage() {
             Already have an account?{" "}
             <Link
               href="/auth/signin"
-              className="font-medium text-orange-500 hover:text-orange-400"
+              className="font-medium text-main hover:text-mainHover"
             >
               Sign in
             </Link>

@@ -144,7 +144,7 @@ export function RecipeForm() {
                     setImageUrl(null);
                     setActualFile(null);
                   }}
-                  className="absolute right-2 top-2 rounded-full bg-white p-1 text-gray-500 shadow-sm hover:text-gray-700"
+                  className="absolute right-2 top-2 rounded-full bg-white p-1 text-main shadow hover:text-mainHover"
                 >
                   <Minus className="h-5 w-5" />
                 </button>
@@ -154,7 +154,9 @@ export function RecipeForm() {
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="mt-4 flex text-sm text-gray-600">
                   <label className="relative cursor-pointer rounded-md bg-white font-medium text-orange-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-500 focus-within:ring-offset-2 hover:text-orange-400">
-                    <span>Upload a file</span>
+                    <span className="text-main hover:text-mainHover">
+                      Upload a file
+                    </span>
                     <input
                       type="file"
                       className="sr-only"
