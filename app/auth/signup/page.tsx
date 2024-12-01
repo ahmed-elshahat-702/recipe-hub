@@ -1,24 +1,45 @@
 import { Metadata } from "next";
 import { SignUpForm } from "@/components/auth/signup-form";
+import Link from "next/link";
+import { Suspense } from "react";
+import { ChefHat } from "lucide-react";
+
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/auth-options";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Sign Up - RecipeShare",
   description: "Create your RecipeShare account",
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/");
+  }
   return (
-    <div className="container flex h-screen w-full flex-col items-center justify-center">
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Create an account
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your email below to create your account
+    <div className="flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <div className="text-center">
+          <ChefHat className="mx-auto h-12 w-12 text-orange-500" />
+          <h2 className="mt-6 text-3xl font-bold tracking-tight">
+            Create your account
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/auth/signin"
+              className="font-medium text-orange-500 hover:text-orange-400"
+            >
+              Sign in
+            </Link>
           </p>
         </div>
-        <SignUpForm />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SignUpForm />
+        </Suspense>
       </div>
     </div>
   );

@@ -10,9 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { CookingPot, Search, User } from "lucide-react";
+import { CookingPot, LogOut, Search, User } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { useEffect, useState } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 export function Navigation() {
   const { data: session, status } = useSession();
@@ -33,8 +34,8 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link href="/" className="flex items-center">
-              <CookingPot className="h-6 w-6 mr-2" />
-              <span className="font-bold text-xl">RecipeShare</span>
+              <CookingPot className="h-6 w-6 mr-2 text-main" />
+              <span className="font-bold text-xl text-main">RecipeShare</span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
@@ -56,13 +57,7 @@ export function Navigation() {
           <div className="flex items-center space-x-4">
             <ModeToggle />
             {status === "loading" ? (
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
-                disabled
-              >
-                <span className="sr-only">Loading</span>
-              </Button>
+              <Skeleton className="w-8 h-8 rounded-full bg-main/80" />
             ) : session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -70,7 +65,7 @@ export function Navigation() {
                     variant="ghost"
                     className="relative h-8 w-8 rounded-full"
                   >
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
                         src={session.user?.image || ""}
                         alt={session.user?.name || ""}
@@ -84,12 +79,14 @@ export function Navigation() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
+                      <User className="mr-2 h-4 w-4 text-main" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut()}>
-                    Sign out
+                    {/* sign out icon */}
+                    <LogOut className="mr-2 h-4 w-4 text-main" />
+                    Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

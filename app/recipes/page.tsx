@@ -26,7 +26,7 @@ export default function RecipesPage() {
   return (
     <div className="container py-16 space-y-12">
       {/* Header Section */}
-      <h2 className="text-4xl font-extrabold tracking-tight text-center md:text-5xl">
+      <h2 className="text-main text-4xl font-extrabold tracking-tight text-center md:text-5xl">
         Latest Recipes
       </h2>
       <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">

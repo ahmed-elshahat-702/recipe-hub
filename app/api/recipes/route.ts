@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db/connect";
 import { Recipe } from "@/lib/db/models/Recipe";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/auth-options";
+import { User } from "@/lib/db/models/User";
 
 export async function GET(request: Request) {
   try {
@@ -63,6 +64,12 @@ export async function POST(request: Request) {
       images: data.imageUrl,
       author: session.user.id,
     });
+
+    await User.findByIdAndUpdate(
+      session.user.id,
+      { $push: { createdRecipes: recipe._id } },
+      { new: true }
+    );
 
     return NextResponse.json({ recipe }, { status: 201 });
   } catch (error) {

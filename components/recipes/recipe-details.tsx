@@ -5,52 +5,57 @@ import { Recipe } from "@/lib/types/recipe";
 
 export function RecipeDetails({ recipe }: { recipe: Recipe }) {
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-6">
-        <section className="md:w-2/3 relative overflow-hidden rounded-lg shadow-md">
-          <Image
-            src={recipe.images?.[0] || "/images/recipe-placeholder.jpg"}
-            alt={recipe.title}
-            width={800}
-            height={400}
-            className="object-cover w-full h-48 md:h-64"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
+    <div className="max-w-4xl mx-auto text-foreground">
+      <div className="grid md:grid-cols-3 gap-6">
+        <section className="md:col-span-2 bg-card rounded-lg shadow-md overflow-hidden">
+          <div className="relative h-64">
+            <Image
+              src={recipe.images?.[0] || "/images/recipe-placeholder.jpg"}
+              alt={recipe.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-6 space-y-4">
+            <h1 className="text-3xl font-bold text-foreground">
               {recipe.title}
             </h1>
-            <p className="text-white/80 text-sm">{recipe.description}</p>
+            <p className="text-muted-foreground">{recipe.description}</p>
           </div>
         </section>
 
-        <div className="md:w-1/3 space-y-6">
-          <section className="flex justify-between bg-card rounded-lg shadow-sm p-3">
-            <div className="flex flex-col items-center">
-              <Clock className="h-6 w-6 text-primary mb-1" />
-              <span className="text-sm font-medium">
-                {recipe.cookingTime} mins
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Users className="h-6 w-6 text-primary mb-1" />
-              <span className="text-sm font-medium">
-                {recipe.servings} servings
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <ChefHat className="h-6 w-6 text-primary mb-1" />
-              <span className="text-sm font-medium capitalize">
-                {recipe.difficulty}
-              </span>
+        <div className="space-y-6">
+          <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col items-center">
+                <Clock className="h-6 w-6 text-main mb-1" />
+                <span className="text-sm font-medium">
+                  {recipe.cookingTime} mins
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <Users className="h-6 w-6 text-main mb-1" />
+                <span className="text-sm font-medium">
+                  {recipe.servings} servings
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <ChefHat className="h-6 w-6 text-main mb-1" />
+                <span className="text-sm font-medium capitalize">
+                  {recipe.difficulty}
+                </span>
+              </div>
             </div>
           </section>
 
-          <section className="bg-card rounded-lg shadow-sm p-4">
-            <h2 className="text-lg font-semibold mb-2">Ingredients</h2>
-            <ul className="space-y-1 text-sm">
+          <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
+            <h2 className="text-lg font-semibold mb-3 text-main">
+              Ingredients
+            </h2>
+            <ul className="space-y-2 text-sm">
               {recipe.ingredients.map((ingredient, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="w-12 font-medium">
+                  <span className="w-16 font-medium">
                     {ingredient.amount} {ingredient.unit}
                   </span>
                   <span>{ingredient.name}</span>
@@ -59,29 +64,29 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
             </ul>
           </section>
 
-          <section className="bg-card rounded-lg shadow-sm p-4">
-            <h2 className="text-lg font-semibold mb-2">Instructions</h2>
-            <ol className="space-y-2 text-sm">
+          <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
+            <h2 className="text-lg font-semibold mb-3 text-main">
+              Instructions
+            </h2>
+            <ol className="space-y-3 text-sm">
               {recipe.instructions.map((instruction, index) => (
                 <li key={index} className="flex">
-                  <span className="font-bold text-primary mr-2">
-                    {index + 1}.
-                  </span>
+                  <span className="font-bold text-main mr-3">{index + 1}.</span>
                   <p>{instruction}</p>
                 </li>
               ))}
             </ol>
           </section>
 
-          <section className="bg-card rounded-lg shadow-sm p-4">
-            <h2 className="text-lg font-semibold mb-2">Categories</h2>
-            <div className="flex flex-wrap gap-1">
+          <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
+            <h2 className="text-lg font-semibold mb-3 text-main">Categories</h2>
+            <div className="flex flex-wrap gap-2">
               {recipe.categories && recipe.categories.length > 0 ? (
                 recipe.categories.map((category) => (
                   <Badge
                     key={category}
-                    variant="secondary"
-                    className="text-xs px-2 py-0.5"
+                    variant="outline"
+                    className="text-xs px-2 py-1 bg-main/10"
                   >
                     {category}
                   </Badge>

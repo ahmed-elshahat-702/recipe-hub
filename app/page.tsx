@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen">
       <section className="py-20 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6 text-main">
             Share Your Culinary Journey
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
@@ -38,8 +38,8 @@ export default function Home() {
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CookingPot className="h-6 w-6 text-primary" />
+              <div className="bg-main text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CookingPot className="h-6 w-6 " />
               </div>
               <h3 className="text-xl font-semibold mb-2">Share Your Recipes</h3>
               <p className="text-muted-foreground">
@@ -47,8 +47,8 @@ export default function Home() {
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Utensils className="h-6 w-6 text-primary" />
+              <div className="bg-main text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Utensils className="h-6 w-6 " />
               </div>
               <h3 className="text-xl font-semibold mb-2">
                 Discover New Dishes
@@ -58,8 +58,8 @@ export default function Home() {
               </p>
             </div>
             <div className="text-center p-6">
-              <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-6 w-6 text-primary" />
+              <div className="bg-main text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-6 w-6 " />
               </div>
               <h3 className="text-xl font-semibold mb-2">Join the Community</h3>
               <p className="text-muted-foreground">
