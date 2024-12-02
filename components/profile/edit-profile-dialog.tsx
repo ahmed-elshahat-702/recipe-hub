@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -110,7 +111,7 @@ export function EditProfileDialog() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong while updating your profile.",
+        description: `Something went wrong while updating your profile. ${error}`,
         variant: "destructive",
       });
     } finally {
@@ -148,7 +149,7 @@ export function EditProfileDialog() {
               <FormField
                 control={form.control}
                 name="image"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Profile Image</FormLabel>
                     <FormControl>

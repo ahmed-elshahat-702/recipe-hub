@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecipeCard } from "@/components/recipes/recipe-card";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
 import { useSession } from "next-auth/react";
 import { Recipe } from "@/lib/types/recipe";
@@ -43,7 +43,7 @@ export default function ProfilePage() {
     if (session) {
       fetchProfileRecipes();
     }
-  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [session]);
 
   return (
     <div className="container mx-auto py-8">

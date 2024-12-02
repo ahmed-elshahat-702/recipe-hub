@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { CookingPot, LogOut, Search, User } from "lucide-react";
+import { CookingPot, LogOut, User } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
@@ -35,7 +35,7 @@ export function Navigation() {
   useEffect(() => {
     setMounted(true);
     fetccProfileData();
-  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [session]);
 
   // Render a simplified version during SSR
   if (!mounted) {

@@ -2,7 +2,7 @@
 
 import { RecipeCard } from "@/components/recipes/recipe-card";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type Recipe } from "@/lib/types/recipe";
 import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
 

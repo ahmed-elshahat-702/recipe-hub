@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Connection, ConnectOptions } from "mongoose";
 
-const MONGODB_URI = process.env.NEXT_PUBLIC_MONGODB_URI!;
+const MONGODB_URI = process.env.NEXT_PUBLIC_MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -8,24 +8,25 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+interface CachedMongoose {
+  conn: Connection | null;
+  promise: Promise<Connection> | null;
 }
 
-export async function connectDB() {
+const cached: CachedMongoose = { conn: null, promise: null };
+
+export async function connectDB(): Promise<Connection> {
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
+    const opts: ConnectOptions = {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      return mongoose.connection;
     });
   }
 

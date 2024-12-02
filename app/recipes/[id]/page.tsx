@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RecipeDetails } from "@/components/recipes/recipe-details";
 import { RecipeDetailsSkeleton } from "@/components/recipes/recipe-details-skeleton";
 import axios from "axios";
@@ -10,16 +10,16 @@ export default function RecipePage({
   params: Promise<{ id: string }>;
 }) {
   const [recipe, setRecipe] = useState(null);
-  const resolvedParams = use(params);
 
   const fetchRecipe = async () => {
-    const response = await axios.get(`/api/recipes/${resolvedParams.id}`);
+    const id = (await params).id;
+    const response = await axios.get(`/api/recipes/${id}`);
     setRecipe(response.data);
   };
 
   useEffect(() => {
     fetchRecipe();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="container py-8">

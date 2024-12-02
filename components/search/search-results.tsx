@@ -1,3 +1,4 @@
+import React from "react";
 import { Recipe } from "@/lib/db/models/Recipe";
 import { connectDB } from "@/lib/db/connect";
 import { RecipeCard } from "@/components/recipes/recipe-card";
@@ -13,8 +14,7 @@ async function getSearchResults(
 
   const limit = 12;
   const skip = (page - 1) * limit;
-
-  let filterQuery: any = {};
+  const filterQuery: { $text?: { $search: string }; categories?: string } = {};
 
   if (query) {
     filterQuery.$text = { $search: query };

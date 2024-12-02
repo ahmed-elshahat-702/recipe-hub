@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 
 import { AuthForm } from "@/components/auth/auth-form";
 import { ChefHat } from "lucide-react";

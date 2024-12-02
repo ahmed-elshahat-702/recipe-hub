@@ -20,7 +20,8 @@ export async function GET(
     return NextResponse.json(recipe);
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
+
       { status: 500 }
     );
   }
@@ -53,7 +54,8 @@ export async function PUT(
     return NextResponse.json(recipe);
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
+
       { status: 500 }
     );
   }
@@ -83,7 +85,7 @@ export async function DELETE(
     return NextResponse.json({ message: "Recipe deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
       { status: 500 }
     );
   }

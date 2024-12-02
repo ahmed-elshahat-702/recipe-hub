@@ -4,7 +4,7 @@ import { authOptions } from "../../auth/auth-options";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -36,7 +36,7 @@ export async function PUT(req: Request) {
     }
 
     const { image, name, bio } = await req.json();
-    const db = await connectDB();
+    await connectDB();
 
     const result = await User.findOneAndUpdate(
       { _id: session.user.id },

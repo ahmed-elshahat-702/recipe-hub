@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -94,7 +95,7 @@ export function AuthForm({ variant }: AuthFormProps) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: `Something went wrong. Please try again. ${error}`,
       });
     } finally {
       setIsLoading(false);
@@ -109,7 +110,7 @@ export function AuthForm({ variant }: AuthFormProps) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to sign in with Google. Please try again.",
+        description: `Failed to sign in with Google. Please try again. ${error}`,
       });
     } finally {
       setIsLoading(false);
@@ -119,7 +120,7 @@ export function AuthForm({ variant }: AuthFormProps) {
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
     try {
-      const res = await axios.post("/api/auth/signup", {
+      await axios.post("/api/auth/signup", {
         email: values.email,
         password: values.password,
         name: values.name,

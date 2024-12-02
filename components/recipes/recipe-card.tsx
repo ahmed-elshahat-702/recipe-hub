@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
   useEffect(() => {
     fetchRecipeAuthor();
-  }, [recipe.author._id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [recipe.author._id]);
 
   return (
     <Link href={`/recipes/${recipe._id}`}>

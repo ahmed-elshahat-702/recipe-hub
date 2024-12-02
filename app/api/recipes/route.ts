@@ -15,7 +15,10 @@ export async function GET(request: Request) {
 
     await connectDB();
 
-    let filterQuery: any = {};
+    const filterQuery: {
+      $text?: { $search: string };
+      categories?: string;
+    } = {};
 
     if (query) {
       filterQuery.$text = { $search: query };
@@ -43,7 +46,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
       { status: 500 }
     );
   }
@@ -74,7 +77,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ recipe }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
       { status: 500 }
     );
   }

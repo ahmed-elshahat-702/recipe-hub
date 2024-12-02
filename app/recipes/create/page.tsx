@@ -1,3 +1,4 @@
+import React from "react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecipeForm } from "@/components/recipes/recipe-form";

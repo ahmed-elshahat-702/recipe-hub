@@ -1,7 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 
-export interface ProfileData {
+interface ProfileData {
   name?: string;
   email?: string;
   image?: string;
