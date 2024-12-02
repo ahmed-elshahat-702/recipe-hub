@@ -152,8 +152,8 @@ export function RecipeForm() {
               <div className="text-center">
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="mt-4 flex text-sm text-gray-600">
-                  <label className="relative cursor-pointer rounded-md bg-white font-medium text-orange-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-500 focus-within:ring-offset-2 hover:text-orange-400">
-                    <span className="text-main hover:text-mainHover">
+                  <label className="relative cursor-pointer rounded-md bg-white font-medium text-main focus-within:outline-none focus-within:ring-2 focus-within:ring-main focus-within:ring-offset-2 hover:text-mainHover">
+                    <span className="bg-main hover:bg-mainHover text-white py-1 px-2 rounded-md transition-colors duration-200">
                       Upload a file
                     </span>
                     <input
@@ -166,7 +166,7 @@ export function RecipeForm() {
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 mt-2">
                   PNG, JPG, GIF up to 10MB
                 </p>
               </div>
