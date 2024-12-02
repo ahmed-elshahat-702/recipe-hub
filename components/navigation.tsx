@@ -35,7 +35,7 @@ export function Navigation() {
   useEffect(() => {
     setMounted(true);
     fetccProfileData();
-  }, [session]);
+  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Render a simplified version during SSR
   if (!mounted) {

@@ -134,13 +134,14 @@ export function EditProfileDialog() {
           <span className="hidden sm:block"> Edit Profile</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-11/12 sm:max-w-[425px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Edit Profile</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                Make changes to your profile here. Click save when you&apos;re
+                done.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">

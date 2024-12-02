@@ -39,7 +39,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
   useEffect(() => {
     fetchRecipeAuthor();
-  }, [recipe.author._id]);
+  }, [recipe.author._id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Link href={`/recipes/${recipe._id}`}>

@@ -43,7 +43,7 @@ export default function ProfilePage() {
     if (session) {
       fetchProfileRecipes();
     }
-  }, [session]);
+  }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="container mx-auto py-8">
