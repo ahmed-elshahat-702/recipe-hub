@@ -14,14 +14,28 @@ import { CookingPot, LogOut, Search, User } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
+import { useProfile } from "@/hooks/use-profile";
+import axios from "axios";
 
 export function Navigation() {
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
+  const { profile, setProfile } = useProfile();
+
+  const fetccProfileData = async () => {
+    if (!session?.user) return;
+    try {
+      const response = await axios.get(`/api/user/profile`);
+      setProfile(response.data.user);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    fetccProfileData();
+  }, [session]);
 
   // Render a simplified version during SSR
   if (!mounted) {
@@ -58,7 +72,7 @@ export function Navigation() {
             <ModeToggle />
             {status === "loading" ? (
               <Skeleton className="w-8 h-8 rounded-full bg-main/80" />
-            ) : session ? (
+            ) : session && profile ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -67,11 +81,11 @@ export function Navigation() {
                   >
                     <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
-                        src={session.user?.image || ""}
-                        alt={session.user?.name || ""}
+                        src={profile.image ?? undefined}
+                        alt={profile.name || "User"}
                       />
                       <AvatarFallback>
-                        {session.user?.name?.[0] || "?"}
+                        {profile.name?.[0]?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>

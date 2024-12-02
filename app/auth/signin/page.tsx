@@ -39,7 +39,7 @@ export default async function SignInPage() {
           </p>
         </div>
         <Suspense fallback={<div>Loading...</div>}>
-          <AuthForm />
+          <AuthForm variant="signin" />
         </Suspense>
       </div>
     </div>

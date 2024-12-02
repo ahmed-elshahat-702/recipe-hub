@@ -35,12 +35,12 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, bio } = await req.json();
+    const { image, name, bio } = await req.json();
     const db = await connectDB();
 
     const result = await User.findOneAndUpdate(
       { _id: session.user.id },
-      { name, bio },
+      { image, name, bio },
       { new: true }
     );
 
@@ -48,7 +48,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ name, bio });
+    return NextResponse.json({ image, name, bio });
   } catch (error) {
     console.error("Error updating profile:", error);
     return NextResponse.json(

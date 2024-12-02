@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { SignUpForm } from "@/components/auth/signup-form";
+import { AuthForm } from "@/components/auth/auth-form";
+
 import Link from "next/link";
 import { Suspense } from "react";
 import { ChefHat } from "lucide-react";
@@ -38,7 +39,7 @@ export default async function SignUpPage() {
           </p>
         </div>
         <Suspense fallback={<div>Loading...</div>}>
-          <SignUpForm />
+          <AuthForm variant="signup" />
         </Suspense>
       </div>
     </div>

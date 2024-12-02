@@ -99,16 +99,15 @@ export function RecipeForm() {
         process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ""
       );
 
-      const imgResponse = await fetch(
+      const imgResponse = await axios.post(
         `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData,
         {
-          method: "POST",
-          body: formData,
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      const imageData = await imgResponse.json();
-      const imageUrl = imageData.secure_url;
+      const imageUrl = imgResponse.data.secure_url;
 
       const recipeData = { ...data, imageUrl };
       await axios.post("/api/recipes", recipeData);

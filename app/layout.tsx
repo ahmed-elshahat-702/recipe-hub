@@ -34,7 +34,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Navigation />
-            <main className="max-sm:max-w-sm max-md:max-w-lg max-lg:max-w-2xl max-xl:max-w-4xl max-w-5xl mx-auto">
+            <main className="max-sm:max-w-sm max-sm:px-6 max-md:max-w-lg max-lg:max-w-2xl max-xl:max-w-4xl max-w-5xl mx-auto">
               {children}
             </main>
             <Toaster />

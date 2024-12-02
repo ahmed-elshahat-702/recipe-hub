@@ -13,19 +13,13 @@ import { EditProfileDialog } from "@/components/profile/edit-profile-dialog";
 import { CookingPot } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-interface Profile {
-  name: string;
-  email: string;
-  image: string;
-  bio: string;
-}
+import { useProfile } from "@/hooks/use-profile";
 
 export default function ProfilePage() {
   const [profileRecipes, setProfileRecipes] = useState<Recipe[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { data: session } = useSession();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { profile } = useProfile();
 
   const fetchProfileRecipes = async () => {
     if (!session?.user?.id) return;
@@ -45,46 +39,42 @@ export default function ProfilePage() {
       setIsLoading(false);
     }
   };
-
-  const fetchProfileData = async () => {
-    if (!session?.user) return;
-    try {
-      setIsLoading(true);
-      const response = await axios.get<{ user: Profile }>(`/api/user/profile`);
-      setProfile(response.data.user);
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (session) {
       fetchProfileRecipes();
-      fetchProfileData();
     }
   }, [session]);
 
   return (
     <div className="container mx-auto py-8">
-      {profile ? (
+      {session && profile ? (
         <Card className="mb-8">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between relative">
             <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20 border-4 border-main">
-                <AvatarImage src={profile.image} alt={profile.name} />
-                <AvatarFallback>{profile.name[0]}</AvatarFallback>
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-4 border-main">
+                <AvatarImage
+                  src={profile.image ?? undefined}
+                  alt={profile.name || "Profile"}
+                />
+                <AvatarFallback>
+                  {profile.name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl">{profile.name}</CardTitle>
-                <p className="text-muted-foreground">{profile.email}</p>
+                <CardTitle className="text-xl sm:text-2xl">
+                  {profile.name}
+                </CardTitle>
+                <p className="text-muted-foreground max-sm:text-sm">
+                  {profile.email}
+                </p>
               </div>
             </div>
-            <EditProfileDialog />
+            <div className="absolute top-2 right-2">
+              <EditProfileDialog />
+            </div>
           </CardHeader>
           <CardContent>
-            <p className="text-lg">{profile.bio || "No bio available."}</p>
+            <p className="sm:text-lg">{profile.bio || "No bio available."}</p>
           </CardContent>
         </Card>
       ) : isLoading ? (
@@ -105,14 +95,14 @@ export default function ProfilePage() {
         </Card>
       ) : (
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Profile</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Profile</h2>
           <p className="text-muted-foreground">
             You are not logged in. Please log in to view your profile.
           </p>
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-4">My Recipes</h2>
+      <h2 className="text-xl sm:text-2xl font-bold mb-4">My Recipes</h2>
       {isLoading ? (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 10 }).map((_, index) => (

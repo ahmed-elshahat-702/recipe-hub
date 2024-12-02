@@ -7,10 +7,10 @@ export default function Home() {
     <div className="min-h-screen">
       <section className="py-20 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6 text-main">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-6xl mb-6 text-main">
             Share Your Culinary Journey
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="sm:text-xl text-muted-foreground mb-8">
             Join our community of food enthusiasts. Share recipes, discover new
             dishes, and connect with fellow home chefs.
           </p>
@@ -33,7 +33,7 @@ export default function Home() {
 
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">
             Why Join RecipeShare?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
