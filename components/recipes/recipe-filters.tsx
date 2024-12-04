@@ -33,8 +33,8 @@ export function RecipeFilters() {
   const [searchValue, setSearchValue] = useState("");
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row items-center justify-between">
-      <div className="w-full sm:w-1/3">
+    <div className="flex flex-col gap-4 md:flex-row items-center justify-between">
+      <div className="flex-1 w-full">
         <label htmlFor="search" className="text-sm font-medium mb-2 block">
           Search Recipes
         </label>
@@ -64,8 +64,8 @@ export function RecipeFilters() {
           </button>
         </div>
       </div>
-      <div className="flex gap-4 w-full sm:w-auto">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-1 gap-4 w-full md:w-auto">
+        <div className="flex-1 flex flex-col gap-2">
           <label htmlFor="category" className="text-sm font-medium">
             Category
           </label>
@@ -74,7 +74,7 @@ export function RecipeFilters() {
               setSelectedCategory(value === "All" ? "" : value)
             }
           >
-            <SelectTrigger id="category" className="w-[180px]">
+            <SelectTrigger id="category" className="w-full">
               <UtensilsCrossed className="w-4 h-4 mr-2 text-main" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -88,7 +88,7 @@ export function RecipeFilters() {
           </Select>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-2">
           <label htmlFor="sort" className="text-sm font-medium">
             Sort By
           </label>
@@ -97,7 +97,7 @@ export function RecipeFilters() {
               setSortBy(value)
             }
           >
-            <SelectTrigger id="sort" className="w-[180px]">
+            <SelectTrigger id="sort" className="w-full">
               <ArrowUpDown className="w-4 h-4 mr-2 text-main" />
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
