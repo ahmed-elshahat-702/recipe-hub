@@ -13,11 +13,20 @@ import { EditProfileDialog } from "@/components/profile/edit-profile-dialog";
 import { CookingPot } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useProfile } from "@/hooks/use-profile";
 
 export default function ProfilePage() {
   const [profileRecipes, setProfileRecipes] = useState<Recipe[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = useSession();
   const { profile } = useProfile();
 
@@ -42,9 +51,17 @@ export default function ProfilePage() {
       );
 
       // Filter out null values before setting state
-      setProfileRecipes(
-        profileRecipesData.filter((recipe): recipe is Recipe => recipe !== null)
+      const validRecipes = profileRecipesData.filter(
+        (recipe): recipe is Recipe => recipe !== null
       );
+
+      // Sort recipes by creation date (newest first)
+      validRecipes.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      setProfileRecipes(validRecipes);
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setProfileRecipes([]);
@@ -118,18 +135,76 @@ export default function ProfilePage() {
       <h2 className="text-xl sm:text-2xl font-bold mb-4">My Recipes</h2>
       {isLoading ? (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 12 }).map((_, index) => (
             <RecipeCardSkeleton key={index} />
           ))}
         </div>
       ) : (
         profileRecipes &&
         (profileRecipes.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {profileRecipes.map((recipe) => (
-              <RecipeCard key={recipe._id} recipe={recipe} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {profileRecipes
+                .slice((currentPage - 1) * 12, currentPage * 12)
+                .map((recipe) => (
+                  <RecipeCard key={recipe._id} recipe={recipe} />
+                ))}
+            </div>
+
+            {/* Pagination */}
+            {profileRecipes.length > 12 && (
+              <Pagination className="mt-8">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) {
+                          setCurrentPage(currentPage - 1);
+                          fetchProfileRecipes();
+                        }
+                      }}
+                    />
+                  </PaginationItem>
+                  {Array.from({
+                    length: Math.ceil(profileRecipes.length / 12),
+                  }).map((_, index) => {
+                    const pageNumber = index + 1;
+                    return (
+                      <PaginationItem key={pageNumber}>
+                        <PaginationLink
+                          href="#"
+                          isActive={pageNumber === currentPage}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(pageNumber);
+                            fetchProfileRecipes();
+                          }}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (
+                          currentPage < Math.ceil(profileRecipes.length / 12)
+                        ) {
+                          setCurrentPage(currentPage + 1);
+                          fetchProfileRecipes();
+                        }
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
         ) : (
           <div className="w-full text-center">
             <p className="text-muted-foreground mb-4">

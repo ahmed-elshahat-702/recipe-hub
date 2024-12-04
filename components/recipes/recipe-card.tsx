@@ -36,6 +36,7 @@ interface RecipeAuthor {
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const [recipeAuthor, setRecipeAuthor] = useState<RecipeAuthor | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { data: session } = useSession();
   const { deleteRecipe } = useRecipeStore();
   const { toast } = useToast();
@@ -65,6 +66,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   };
 
   const handleDelete = async () => {
+    setIsDeleting(true);
     await deleteRecipe(recipe._id);
     setShowDeleteDialog(false);
     toast({
@@ -72,6 +74,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       description: "Your recipe has been deleted successfully.",
     });
     router.refresh();
+    setIsDeleting(false);
   };
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -94,6 +97,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                 variant="secondary"
                 className="h-8 w-8"
                 onClick={handleEdit}
+                disabled={isDeleting}
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -105,6 +109,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   e.preventDefault();
                   setShowDeleteDialog(true);
                 }}
+                disabled={isDeleting}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

@@ -75,7 +75,7 @@ export function RecipeFilters() {
             }
           >
             <SelectTrigger id="category" className="w-[180px]">
-              <UtensilsCrossed className="w-4 h-4 mr-2" />
+              <UtensilsCrossed className="w-4 h-4 mr-2 text-main" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -98,7 +98,7 @@ export function RecipeFilters() {
             }
           >
             <SelectTrigger id="sort" className="w-[180px]">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
+              <ArrowUpDown className="w-4 h-4 mr-2 text-main" />
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

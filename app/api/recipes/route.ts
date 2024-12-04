@@ -7,13 +7,14 @@ import { User } from "@/lib/db/models/User";
 
 export async function GET(request: Request) {
   try {
+    await connectDB();
+
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query");
     const category = searchParams.get("category");
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = 10;
-
-    await connectDB();
+    const limit = parseInt(searchParams.get("limit") || "12");
+    const skip = (page - 1) * limit;
 
     const filterQuery: {
       $text?: { $search: string };
@@ -31,6 +32,8 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
+    const total = await Recipe.countDocuments(filterQuery);
+
     const recipes = await Recipe.find(filterQuery)
       .populate({
         path: "author",
@@ -46,17 +49,17 @@ export async function GET(request: Request) {
         },
       })
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
+      .skip(skip)
       .limit(limit);
 
-    const total = await Recipe.countDocuments(filterQuery);
+    const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json({
       recipes,
       pagination: {
-        total,
-        pages: Math.ceil(total / limit),
         current: page,
+        pages: totalPages,
+        total,
       },
     });
   } catch (error) {

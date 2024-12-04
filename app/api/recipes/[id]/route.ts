@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db/connect";
 import { Recipe } from "@/lib/db/models/Recipe";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/auth-options";
+import { User } from "@/lib/db/models/User";
 
 export async function GET(
   request: Request,
@@ -73,14 +74,20 @@ export async function DELETE(
 
     const { id } = await context.params;
     await connectDB();
-    const recipe = await Recipe.findOneAndDelete({
-      _id: id,
-      author: session.user.id,
-    });
+
+    const recipe = await Recipe.findOne({ _id: id, author: session.user.id });
 
     if (!recipe) {
       return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
     }
+
+    await Recipe.findByIdAndDelete(id);
+
+    await User.findByIdAndUpdate(
+      session.user.id,
+      { $pull: { createdRecipes: id } },
+      { new: true }
+    );
 
     return NextResponse.json({ message: "Recipe deleted successfully" });
   } catch (error) {

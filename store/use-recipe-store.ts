@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { Recipe } from "@/lib/types/recipe";
 import axios from "axios";
 
+interface PaginationState {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
 interface RecipeStore {
   recipes: Recipe[];
   filteredRecipes: Recipe[];
@@ -10,14 +16,16 @@ interface RecipeStore {
   searchQuery: string;
   selectedCategory: string;
   sortBy: "latest" | "oldest" | "name";
-  fetchRecipes: () => Promise<void>;
-  deleteRecipe: (recipeId: string) => Promise<void>;
-  createRecipe: (recipeData: any) => Promise<void>;
-  updateRecipe: (recipeId: string, recipeData: any) => Promise<void>;
+  pagination: PaginationState;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
-  setSortBy: (sort: "latest" | "oldest" | "name") => void;
+  setSortBy: (sortBy: "latest" | "oldest" | "name") => void;
+  fetchRecipes: () => Promise<void>;
+  createRecipe: (recipeData: any) => Promise<void>;
+  updateRecipe: (recipeId: string, recipeData: any) => Promise<void>;
+  deleteRecipe: (recipeId: string) => Promise<void>;
   filterAndSortRecipes: () => void;
+  setPage: (page: number) => void;
 }
 
 export const useRecipeStore = create<RecipeStore>((set, get) => ({
@@ -28,73 +36,61 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   searchQuery: "",
   selectedCategory: "",
   sortBy: "latest",
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+  },
 
-  setSearchQuery: (query: string) => {
+  setSearchQuery: (query) => {
     set({ searchQuery: query });
     const store = get();
     store.filterAndSortRecipes();
   },
 
-  setSelectedCategory: (category: string) => {
+  setSelectedCategory: (category) => {
     set({ selectedCategory: category });
     const store = get();
     store.filterAndSortRecipes();
   },
 
-  setSortBy: (sort: "latest" | "oldest" | "name") => {
-    set({ sortBy: sort });
+  setSortBy: (sortBy) => {
+    set({ sortBy });
     const store = get();
     store.filterAndSortRecipes();
   },
 
-  filterAndSortRecipes: () => {
-    const { recipes, searchQuery, selectedCategory, sortBy } = get();
-
-    let filtered = [...recipes];
-
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (recipe) =>
-          recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          recipe.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Apply category filter
-    if (selectedCategory) {
-      filtered = filtered.filter((recipe) =>
-        recipe.categories?.includes(selectedCategory)
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "latest":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        case "oldest":
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-        case "name":
-          return a.title.localeCompare(b.title);
-        default:
-          return 0;
-      }
-    });
-
-    set({ filteredRecipes: filtered });
+  setPage: (page) => {
+    set((state) => ({
+      pagination: {
+        ...state.pagination,
+        currentPage: page,
+      },
+    }));
+    const store = get();
+    store.fetchRecipes();
   },
 
   fetchRecipes: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get("/api/recipes");
-      if (response.data && Array.isArray(response.data.recipes)) {
-        set({ recipes: response.data.recipes });
+      const { searchQuery, selectedCategory, pagination } = get();
+      const params = new URLSearchParams();
+      if (searchQuery) params.set("query", searchQuery);
+      if (selectedCategory) params.set("category", selectedCategory);
+      params.set("page", pagination.currentPage.toString());
+      params.set("limit", "12");
+
+      const response = await axios.get(`/api/recipes?${params.toString()}`);
+      if (response.data) {
+        set({
+          recipes: response.data.recipes,
+          pagination: {
+            currentPage: response.data.pagination.current,
+            totalPages: response.data.pagination.pages,
+            totalItems: response.data.pagination.total,
+          },
+        });
         const store = get();
         store.filterAndSortRecipes();
       } else {
@@ -111,8 +107,12 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   deleteRecipe: async (recipeId: string) => {
     // Optimistically update UI
     const previousRecipes = get().recipes;
+    const previousFilteredRecipes = get().filteredRecipes;
+    
+    // Update both recipes and filteredRecipes arrays
     set({
       recipes: previousRecipes.filter((recipe) => recipe._id !== recipeId),
+      filteredRecipes: previousFilteredRecipes.filter((recipe) => recipe._id !== recipeId),
     });
 
     try {
@@ -123,7 +123,10 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       await axios.delete(`/api/user/recipes/${recipeId}`);
     } catch (error) {
       // Revert on error
-      set({ recipes: previousRecipes });
+      set({ 
+        recipes: previousRecipes,
+        filteredRecipes: previousFilteredRecipes,
+      });
       console.error("Error deleting recipe:", error);
       set({ error: "Failed to delete recipe" });
     }
@@ -170,5 +173,47 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       console.error("Error updating recipe:", error);
       set({ error: "Failed to update recipe" });
     }
+  },
+
+  filterAndSortRecipes: () => {
+    const { recipes, searchQuery, selectedCategory, sortBy } = get();
+
+    let filtered = [...recipes];
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (recipe) =>
+          recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recipe.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategory) {
+      filtered = filtered.filter((recipe) =>
+        recipe.categories?.includes(selectedCategory)
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "latest":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        case "name":
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+    set({ filteredRecipes: filtered });
   },
 }));
