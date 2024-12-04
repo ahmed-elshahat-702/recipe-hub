@@ -28,8 +28,23 @@ export async function GET(request: Request) {
       filterQuery.categories = category;
     }
 
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
     const recipes = await Recipe.find(filterQuery)
-      .populate("author", "name image")
+      .populate({
+        path: "author",
+        select: "name image",
+        transform: (doc: any, id: any) => {
+          // Only show author details if:
+          // 1. The recipe is not anonymous, or
+          // 2. The viewer is the author themselves
+          if (!doc?.isAnonymous || (userId && userId === id.toString())) {
+            return { _id: doc._id, name: doc.name, image: doc.image };
+          }
+          return { name: "Anonymous User" };
+        },
+      })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -55,29 +70,44 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const data = await request.json();
+    const { isAnonymous, ...recipeData } = data;
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "You must be logged in to create a recipe" },
+        { status: 401 }
+      );
     }
 
-    const data = await request.json();
     await connectDB();
 
+    // Handle images array instead of single imageUrl
+    const images = Array.isArray(recipeData.images) ? recipeData.images : [];
+
+    // Create the recipe with author and isAnonymous flag
     const recipe = await Recipe.create({
-      ...data,
-      images: data.imageUrl,
+      ...recipeData,
+      images,
       author: session.user.id,
+      isAnonymous: isAnonymous || false,
     });
 
+    // Always add recipe to user's createdRecipes since we're keeping track of authorship
     await User.findByIdAndUpdate(
       session.user.id,
       { $push: { createdRecipes: recipe._id } },
       { new: true }
     );
 
-    return NextResponse.json({ recipe }, { status: 201 });
+    return NextResponse.json(recipe, { status: 201 });
   } catch (error) {
+    console.error("Error creating recipe:", error);
     return NextResponse.json(
-      { error: `Internal Server Error: ${error}` },
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to create recipe",
+      },
       { status: 500 }
     );
   }

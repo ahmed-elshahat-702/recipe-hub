@@ -17,8 +17,10 @@ export interface Recipe {
   ingredients: Ingredient[];
   instructions: string[];
   image?: string;
+  imageUrl?: string;
   images?: string[];
-  author: Author;
+  author?: Author;
+  isAnonymous?: boolean;
   createdAt: string;
   updatedAt: string;
   cookingTime?: number;

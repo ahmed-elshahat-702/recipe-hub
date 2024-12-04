@@ -13,8 +13,16 @@ const recipeSchema = new mongoose.Schema({
   servings: { type: Number, required: true },
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true },
   categories: [{ type: String }],
-  images: [{ type: String }],
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  images: [{ type: String, required: false }],
+  author: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true  
+  },
+  isAnonymous: {
+    type: Boolean,
+    default: false
+  },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

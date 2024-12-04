@@ -27,7 +27,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
+export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {

@@ -28,8 +28,11 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           const user = await User.findOne({ email: credentials.email });
-          if (!user || !user.password) {
+          if (!user) {
             return null;
+          }
+          if (!user.password) {
+            throw new Error("GoogleUserExists");
           }
           const isPasswordValid = await compare(
             credentials.password,
@@ -46,7 +49,7 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error) {
           console.error("Error in authorize:", error);
-          return null;
+          throw error;
         }
       },
     }),

@@ -18,6 +18,15 @@ export async function POST(req: NextRequest) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      if (!existingUser.password) {
+        return NextResponse.json(
+          {
+            message:
+              "That email is already signed in as a Google user. Please try to sign in with Google.",
+          },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
         { message: "User already exists" },
         { status: 400 }

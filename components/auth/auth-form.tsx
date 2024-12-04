@@ -4,7 +4,7 @@ import React from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -58,6 +58,7 @@ export function AuthForm({ variant }: AuthFormProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const router = useRouter();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const form = useForm<
@@ -83,13 +84,27 @@ export function AuthForm({ variant }: AuthFormProps) {
       });
 
       if (result?.error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Invalid email or password. Please try again.",
-        });
+        console.log(result.error);
+        if (result.error === "GoogleUserExists") {
+          toast({
+            variant: "destructive",
+            title: "Google Account Exists",
+            description:
+              "That email is already signed in as a Google user. Please try to sign in with Google.",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Invalid email or password. Please try again.",
+          });
+        }
       } else {
-        window.location.href = callbackUrl;
+        toast({
+          title: "Success",
+          description: "Signed in successfully!",
+        });
+        router.push(callbackUrl);
       }
     } catch (error) {
       toast({
@@ -106,6 +121,11 @@ export function AuthForm({ variant }: AuthFormProps) {
     setIsLoading(true);
     try {
       await signIn("google", { callbackUrl });
+      toast({
+        title: "Success",
+        description: "Signed in successfully!",
+      });
+      router.push(callbackUrl);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -120,33 +140,54 @@ export function AuthForm({ variant }: AuthFormProps) {
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
     try {
-      await axios.post("/api/auth/signup", {
+      const response = await axios.post("/api/auth/signup", {
         email: values.email,
         password: values.password,
         name: values.name,
       });
 
-      await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        callbackUrl: "/",
-      });
+      if (response.status === 201) {
+        const signInResult = await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+          callbackUrl: "/",
+        });
 
-      toast({
-        title: "Success",
-        description: "Account created successfully!",
-      });
+        console.log(signInResult);
+
+        if (signInResult?.error === "GoogleUserExists") {
+          toast({
+            variant: "destructive",
+            title: "Google Account Exists",
+            description:
+              "That email is already signed in as a Google user. Please try to sign in with Google.",
+          });
+        } else if (!signInResult?.error) {
+          toast({
+            title: "Success",
+            description: "Account created and signed in successfully!",
+          });
+          router.push(callbackUrl);
+        } else {
+          throw new Error(signInResult.error);
+        }
+      }
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to create account",
-        variant: "destructive",
-      });
       if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message || "Something went wrong");
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description:
+            error.response.data.message || "Failed to create account",
+        });
       } else {
-        throw new Error("An unexpected error occurred");
+        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An unexpected error occurred",
+        });
       }
     } finally {
       setIsLoading(false);
@@ -166,6 +207,7 @@ export function AuthForm({ variant }: AuthFormProps) {
       return handleSignUp(values as z.infer<typeof signUpSchema>);
     }
   };
+
   return (
     <div className="w-full">
       <div className="grid">

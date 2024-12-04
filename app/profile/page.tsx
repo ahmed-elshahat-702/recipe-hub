@@ -27,14 +27,27 @@ export default function ProfilePage() {
       setIsLoading(true);
       const response = await axios.get(`/api/user/${session.user.id}`);
       const profileRecipesIDs: string[] = response.data.user.createdRecipes;
-      const profileRecipesPromises = profileRecipesIDs.map((id) =>
-        axios.get<Recipe>(`/api/recipes/${id}`)
+
+      // Fetch all recipes in parallel and filter out any failed requests
+      const profileRecipesData = await Promise.all(
+        profileRecipesIDs.map(async (id) => {
+          try {
+            const response = await axios.get<Recipe>(`/api/recipes/${id}`);
+            return response.data;
+          } catch (error) {
+            console.warn(`Recipe with ID ${id} not found or inaccessible`);
+            return null;
+          }
+        })
       );
-      const profileRecipesResponses = await Promise.all(profileRecipesPromises);
-      const profileRecipesData = profileRecipesResponses.map((res) => res.data);
-      setProfileRecipes(profileRecipesData);
+
+      // Filter out null values before setting state
+      setProfileRecipes(
+        profileRecipesData.filter((recipe): recipe is Recipe => recipe !== null)
+      );
     } catch (error) {
-      console.error("Error fetching recipes:", error);
+      console.error("Error fetching user profile:", error);
+      setProfileRecipes([]);
     } finally {
       setIsLoading(false);
     }
