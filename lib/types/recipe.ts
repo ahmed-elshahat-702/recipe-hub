@@ -11,6 +11,7 @@ export interface Ingredient {
 }
 
 export interface Recipe {
+  likes: any;
   _id: string;
   title: string;
   description: string;

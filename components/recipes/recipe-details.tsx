@@ -1,9 +1,7 @@
-import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { ChefHat, Clock, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect } from "react";
 import Image from "next/image";
-import { Recipe } from "@/lib/types/recipe";
-import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import { Clock, Users, ChefHat, SquareArrowOutUpRight } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -11,52 +9,84 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useUserStore } from "@/store/use-user-store";
 import Autoplay from "embla-carousel-autoplay";
+import { RecipeRating } from "./recipe-rating";
+import { RecipeLikeButton } from "./recipe-like-button";
+import { RecipeComments } from "./recipe-comments";
+import { Recipe } from "@/lib/types/recipe";
+import { Badge } from "../ui/badge";
 
 export function RecipeDetails({ recipe }: { recipe: Recipe }) {
-  const images = recipe.images?.length
-    ? recipe.images
-    : ["/images/recipe-placeholder.jpg"];
+  const images = recipe.images ?? ["/images/recipe-placeholder.jpg"];
+
+  const { fetchUser, user } = useUserStore();
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto text-foreground space-y-4">
       <div className="grid md:grid-cols-3 gap-6">
         <section className="md:col-span-2 bg-card rounded-lg shadow border border-main/20 overflow-hidden">
           <div className="relative">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              plugins={[
-                Autoplay({
-                  delay: 4000,
-                }),
-              ]}
-              className="w-full"
-            >
-              <CarouselContent>
-                {images.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="relative h-72">
-                      <Image
-                        src={image}
-                        alt={`${recipe.title} - Image ${index + 1}`}
-                        fill
-                        className="w-full h-full rounded"
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-2 text-main border border-main hover:text-mainHover hover:border-mainHover shadow" />
-              <CarouselNext className="right-2 text-main border border-main hover:text-mainHover hover:border-mainHover shadow" />
-            </Carousel>
+            {(recipe?.images ?? []).length > 1 ? (
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 4000,
+                  }),
+                ]}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative h-44 sm:h-64">
+                        <Image
+                          src={image}
+                          alt={`${recipe.title} - Image ${index + 1}`}
+                          fill
+                          className="w-full h-full rounded"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-2 text-main border border-main hover:text-mainHover hover:border-mainHover shadow" />
+                <CarouselNext className="right-2 text-main border border-main hover:text-mainHover hover:border-mainHover shadow" />
+              </Carousel>
+            ) : (
+              <div className="relative h-44 sm:h-64">
+                <Image
+                  src={recipe?.images?.[0] ?? "/placeholder-image.jpg"}
+                  alt={`${recipe.title} - Image`}
+                  fill
+                  className="w-full h-full rounded"
+                />
+              </div>
+            )}
           </div>
           <div className="p-6 space-y-4">
-            <h1 className="text-3xl font-bold text-foreground">
-              {recipe.title}
-            </h1>
+            <div className="md:flex items-center justify-between">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                {recipe.title}
+              </h1>
+              <div className="flex items-center gap-4">
+                <RecipeRating recipeId={recipe._id} />
+                <RecipeLikeButton
+                  recipeId={recipe._id}
+                  initialLikes={recipe.likes.length}
+                  initialHasLiked={recipe.likes.includes(user?._id)}
+                />
+              </div>
+            </div>
             <p className="text-muted-foreground">{recipe.description}</p>
           </div>
         </section>
@@ -119,6 +149,34 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
               )}
             </div>
           </section>
+          <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
+            <h2 className="text-lg font-semibold mb-3 text-main">Author</h2>
+            {recipe.author && user ? (
+              <Link
+                href={
+                  recipe.author._id === user?._id
+                    ? "/profile"
+                    : `/profile/${recipe.author._id}`
+                }
+                className="inline-flex items-center space-x-2 text-main hover:text-mainHover"
+              >
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
+                  <Image
+                    src={recipe.author.image || "/default-avatar.jpg"}
+                    alt={recipe.author.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span className="text-sm font-medium">
+                  {recipe.author._id === user?._id ? "you" : recipe.author.name}
+                </span>
+                <SquareArrowOutUpRight className="h-3 w-3 " />
+              </Link>
+            ) : (
+              <Skeleton className="w-52 h-5 bg-main" />
+            )}
+          </section>
         </div>
       </div>
       <section className="w-full bg-card rounded-lg shadow-sm p-4 border border-main/20">
@@ -131,6 +189,10 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
             </li>
           ))}
         </ol>
+      </section>
+      {/* Comments Section */}
+      <section className="mt-8 bg-card rounded-lg shadow-sm p-6 border border-main/20">
+        <RecipeComments recipeId={recipe._id} />
       </section>
     </div>
   );

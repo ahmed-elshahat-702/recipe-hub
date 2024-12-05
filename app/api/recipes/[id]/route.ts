@@ -10,9 +10,24 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
     const { id } = await context.params;
     await connectDB();
-    const recipe = await Recipe.findById(id).populate("author", "name");
+    const recipe = await Recipe.findById(id).populate({
+      path: "author",
+      select: "name image",
+      transform: (doc: any, id: any) => {
+        // Only show author details if:
+        // 1. The recipe is not anonymous, or
+        // 2. The viewer is the author themselves
+        if (!doc?.isAnonymous || (userId && userId === id.toString())) {
+          return { _id: doc._id, name: doc.name, image: doc.image };
+        }
+        return { name: "Anonymous User" };
+      },
+    });
 
     if (!recipe) {
       return NextResponse.json({ error: "Recipe not found" }, { status: 404 });

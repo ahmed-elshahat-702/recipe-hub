@@ -21,20 +21,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 interface RecipeCardProps {
   recipe: Recipe;
 }
 
-interface RecipeAuthor {
-  _id: string;
-  name: string;
-  image: string;
-}
-
 export function RecipeCard({ recipe }: RecipeCardProps) {
-  const [recipeAuthor, setRecipeAuthor] = useState<RecipeAuthor | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { data: session } = useSession();
@@ -50,20 +42,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     session?.user?.id &&
     recipe.author?._id &&
     session.user.id === recipe.author._id;
-
-  const fetchRecipeAuthor = async () => {
-    try {
-      if (!recipe.author?._id) {
-        setRecipeAuthor(null);
-        return;
-      }
-
-      const response = await axios.get(`/api/user/${recipe.author._id}`);
-      setRecipeAuthor(response.data.user);
-    } catch (error) {
-      console.error("Error fetching recipe author:", error);
-    }
-  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -81,10 +59,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     e.preventDefault(); // Prevent navigation
     router.push(`/recipes/${recipe._id}/edit`);
   };
-
-  useEffect(() => {
-    fetchRecipeAuthor();
-  }, [recipe.author?._id]);
 
   return (
     <>
@@ -138,12 +112,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   src={
                     recipe.isAnonymous
                       ? "/anonymous-user.jpg"
-                      : recipeAuthor?.image || "/anonymous-user.jpg"
+                      : recipe?.author?.image || "/anonymous-user.jpg"
                   }
                   alt={
                     recipe.isAnonymous
                       ? "/anonymous-user.jpg"
-                      : recipeAuthor?.name || "Anonymous"
+                      : recipe?.author?.name || "Anonymous"
                   }
                   fill
                   className="object-cover"
@@ -152,9 +126,9 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               <span className="text-sm text-muted-foreground">
                 {recipe.isAnonymous
                   ? "Anonymous"
-                  : recipeAuthor?.name === session?.user?.name
+                  : recipe?.author?.name === session?.user?.name
                   ? "You"
-                  : recipeAuthor?.name || "Anonymous"}
+                  : recipe?.author?.name || "Anonymous"}
               </span>
             </div>
           </CardFooter>

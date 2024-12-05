@@ -8,10 +8,16 @@ interface PaginationState {
   totalItems: number;
 }
 
+interface RecipeAuthor {
+  _id: string;
+  name: string;
+  image: string;
+}
 interface RecipeStore {
   recipes: Recipe[];
   filteredRecipes: Recipe[];
   isLoading: boolean;
+  recipeAuthor: RecipeAuthor | null;
   error: string | null;
   searchQuery: string;
   selectedCategory: string;
@@ -21,6 +27,7 @@ interface RecipeStore {
   setSelectedCategory: (category: string) => void;
   setSortBy: (sortBy: "latest" | "oldest" | "name") => void;
   fetchRecipes: () => Promise<void>;
+  fetchRecipeAuthor: (recipe: Recipe) => Promise<void>;
   createRecipe: (recipeData: any) => Promise<void>;
   updateRecipe: (recipeId: string, recipeData: any) => Promise<void>;
   deleteRecipe: (recipeId: string) => Promise<void>;
@@ -32,6 +39,7 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   recipes: [],
   filteredRecipes: [],
   isLoading: false,
+  recipeAuthor: null,
   error: null,
   searchQuery: "",
   selectedCategory: "",
@@ -104,15 +112,33 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     }
   },
 
+  fetchRecipeAuthor: async (recipe: Recipe) => {
+    set({ error: null });
+
+    try {
+      if (!recipe.author?._id) {
+        set({ recipeAuthor: null });
+        return;
+      }
+      const response = await axios.get(`/api/user/${recipe.author._id}`);
+      set({ recipeAuthor: response.data.user });
+    } catch (error) {
+      console.error("Error fetching recipe author:", error);
+      set({ recipeAuthor: null });
+    }
+  },
+
   deleteRecipe: async (recipeId: string) => {
     // Optimistically update UI
     const previousRecipes = get().recipes;
     const previousFilteredRecipes = get().filteredRecipes;
-    
+
     // Update both recipes and filteredRecipes arrays
     set({
       recipes: previousRecipes.filter((recipe) => recipe._id !== recipeId),
-      filteredRecipes: previousFilteredRecipes.filter((recipe) => recipe._id !== recipeId),
+      filteredRecipes: previousFilteredRecipes.filter(
+        (recipe) => recipe._id !== recipeId
+      ),
     });
 
     try {
@@ -123,7 +149,7 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       await axios.delete(`/api/user/recipes/${recipeId}`);
     } catch (error) {
       // Revert on error
-      set({ 
+      set({
         recipes: previousRecipes,
         filteredRecipes: previousFilteredRecipes,
       });

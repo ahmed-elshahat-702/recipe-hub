@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   image?: string;
@@ -25,7 +25,7 @@ export const useUserStore = create<UserStore>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await axios.get("/api/user/profile");
-      set({ user: response.data, isLoading: false });
+      set({ user: response.data.user, isLoading: false });
     } catch (error) {
       set({ error: "Failed to fetch user", isLoading: false });
     }
