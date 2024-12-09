@@ -17,11 +17,13 @@ import { Skeleton } from "./ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
 import axios from "axios";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 export function Navigation() {
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const { profile, setProfile } = useProfile();
+  const { toast } = useToast();
 
   const fetccProfileData = async () => {
     if (!session?.user) return;
@@ -29,7 +31,11 @@ export function Navigation() {
       const response = await axios.get(`/api/user/profile`);
       setProfile(response.data.user);
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch profile data. Please try again.",
+      });
     }
   };
 

@@ -22,13 +22,17 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useProfile } from "@/hooks/use-profile";
+import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ProfilePage() {
   const [profileRecipes, setProfileRecipes] = useState<Recipe[] | null>(null);
+  const [likedRecipes, setLikedRecipes] = useState<Recipe[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = useSession();
   const { profile } = useProfile();
+  const { toast } = useToast();
 
   const fetchProfileRecipes = async () => {
     if (!session?.user?.id) return;
@@ -44,7 +48,10 @@ export default function ProfilePage() {
             const response = await axios.get<Recipe>(`/api/recipes/${id}`);
             return response.data;
           } catch (error) {
-            console.warn(`Recipe with ID ${id} not found or inaccessible`);
+            toast({
+              variant: "destructive",
+              description: `Recipe with ID ${id} not found or inaccessible`,
+            });
             return null;
           }
         })
@@ -63,15 +70,68 @@ export default function ProfilePage() {
 
       setProfileRecipes(validRecipes);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch user profile",
+      });
       setProfileRecipes([]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const fetchLikedRecipes = async () => {
+    if (!session?.user?.id) return;
+    try {
+      setIsLoading(true);
+      const response = await axios.get(`/api/user/${session.user.id}`);
+      const likedRecipesIDs: string[] = response.data.user.likedRecipes;
+
+      // Fetch all recipes in parallel and filter out any failed requests
+      const likedRecipesData = await Promise.all(
+        likedRecipesIDs.map(async (id) => {
+          try {
+            const response = await axios.get<Recipe>(`/api/recipes/${id}`);
+            return response.data;
+          } catch (error) {
+            toast({
+              variant: "destructive",
+              description: `Recipe with ID ${id} not found or inaccessible`,
+            });
+            return null;
+          }
+        })
+      );
+
+      // Filter out null values before setting state
+      const validRecipes = likedRecipesData.filter(
+        (recipe): recipe is Recipe => recipe !== null
+      );
+
+      // Sort recipes by creation date (newest first)
+      validRecipes.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      setLikedRecipes(validRecipes);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch user profile",
+      });
+      setLikedRecipes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (session) {
       fetchProfileRecipes();
+      fetchLikedRecipes();
     }
   }, [session]);
 
@@ -132,93 +192,133 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <h2 className="text-xl sm:text-2xl font-bold mb-4">My Recipes</h2>
-      {isLoading ? (
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <RecipeCardSkeleton key={index} />
-          ))}
-        </div>
-      ) : (
-        profileRecipes &&
-        (profileRecipes.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {profileRecipes
-                .slice((currentPage - 1) * 12, currentPage * 12)
-                .map((recipe) => (
-                  <RecipeCard key={recipe._id} recipe={recipe} />
-                ))}
-            </div>
+      <Tabs defaultValue="myRecipes" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="myRecipes">My Recipes</TabsTrigger>
+          <TabsTrigger value="likedRecipes">Liked Recipes</TabsTrigger>
+        </TabsList>
 
-            {/* Pagination */}
-            {profileRecipes.length > 12 && (
-              <Pagination className="mt-8">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage > 1) {
-                          setCurrentPage(currentPage - 1);
-                          fetchProfileRecipes();
-                        }
-                      }}
-                    />
-                  </PaginationItem>
-                  {Array.from({
-                    length: Math.ceil(profileRecipes.length / 12),
-                  }).map((_, index) => {
-                    const pageNumber = index + 1;
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink
+        <TabsContent value="myRecipes">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">My Recipes</h2>
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <RecipeCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            profileRecipes &&
+            (profileRecipes.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {profileRecipes
+                    .slice((currentPage - 1) * 12, currentPage * 12)
+                    .map((recipe) => (
+                      <RecipeCard key={recipe._id} recipe={recipe} />
+                    ))}
+                </div>
+
+                {/* Pagination */}
+                {profileRecipes.length > 12 && (
+                  <Pagination className="mt-8">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
                           href="#"
-                          isActive={pageNumber === currentPage}
                           onClick={(e) => {
                             e.preventDefault();
-                            setCurrentPage(pageNumber);
-                            fetchProfileRecipes();
+                            if (currentPage > 1) {
+                              setCurrentPage(currentPage - 1);
+                              fetchProfileRecipes();
+                            }
                           }}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
+                        />
                       </PaginationItem>
-                    );
-                  })}
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (
-                          currentPage < Math.ceil(profileRecipes.length / 12)
-                        ) {
-                          setCurrentPage(currentPage + 1);
-                          fetchProfileRecipes();
-                        }
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-          </>
-        ) : (
-          <div className="w-full text-center">
-            <p className="text-muted-foreground mb-4">
-              You have not created any recipes yet.
-            </p>
-            <Link href="/recipes/create">
-              <Button>
-                <CookingPot className="mr-2 h-5 w-5" />
-                Create Recipe
-              </Button>
-            </Link>
-          </div>
-        ))
-      )}
+                      {Array.from({
+                        length: Math.ceil(profileRecipes.length / 12),
+                      }).map((_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationLink
+                              href="#"
+                              isActive={pageNumber === currentPage}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(pageNumber);
+                                fetchProfileRecipes();
+                              }}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (
+                              currentPage < Math.ceil(profileRecipes.length / 12)
+                            ) {
+                              setCurrentPage(currentPage + 1);
+                              fetchProfileRecipes();
+                            }
+                          }}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </>
+            ) : (
+              <div className="w-full text-center">
+                <p className="text-muted-foreground mb-4">
+                  You have not created any recipes yet.
+                </p>
+                <Link href="/recipes/create">
+                  <Button>
+                    <CookingPot className="mr-2 h-5 w-5" />
+                    Create Recipe
+                  </Button>
+                </Link>
+              </div>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="likedRecipes">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Liked Recipes</h2>
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <RecipeCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            likedRecipes &&
+            (likedRecipes.length > 0 ? (
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {likedRecipes.map((recipe) => (
+                  <RecipeCard key={recipe._id} recipe={recipe} />
+                ))}
+              </div>
+            ) : (
+              <div className="w-full text-center">
+                <p className="text-muted-foreground mb-4">
+                  You haven't liked any recipes yet.
+                </p>
+                <Link href="/recipes">
+                  <Button>
+                    Explore Recipes
+                  </Button>
+                </Link>
+              </div>
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

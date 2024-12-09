@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String },
   image: { type: String },
-  savedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
+  likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   createdRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
   bio: { type: String },
   createdAt: { type: Date, default: Date.now },

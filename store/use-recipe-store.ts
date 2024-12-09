@@ -33,6 +33,8 @@ interface RecipeStore {
   deleteRecipe: (recipeId: string) => Promise<void>;
   filterAndSortRecipes: () => void;
   setPage: (page: number) => void;
+  likeRecipe: (recipeId: string, userId: string) => Promise<void>;
+  unlikeRecipe: (recipeId: string, userId: string) => Promise<void>;
 }
 
 export const useRecipeStore = create<RecipeStore>((set, get) => ({
@@ -198,6 +200,54 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     } catch (error) {
       console.error("Error updating recipe:", error);
       set({ error: "Failed to update recipe" });
+    }
+  },
+
+  likeRecipe: async (recipeId: string, userId: string) => {
+    try {
+      const response = await axios.post(`/api/recipes/${recipeId}/likes`, { userId });
+      
+      // Update the likes in the local state
+      set((state) => ({
+        recipes: state.recipes.map((recipe) => 
+          recipe._id === recipeId 
+            ? { ...recipe, likes: response.data.likes } 
+            : recipe
+        ),
+        filteredRecipes: state.filteredRecipes.map((recipe) => 
+          recipe._id === recipeId 
+            ? { ...recipe, likes: response.data.likes } 
+            : recipe
+        )
+      }));
+    } catch (error) {
+      console.error("Error liking recipe:", error);
+      set({ error: "Failed to like recipe" });
+    }
+  },
+
+  unlikeRecipe: async (recipeId: string, userId: string) => {
+    try {
+      const response = await axios.delete(`/api/recipes/${recipeId}/likes`, { 
+        data: { userId } 
+      });
+      
+      // Update the likes in the local state
+      set((state) => ({
+        recipes: state.recipes.map((recipe) => 
+          recipe._id === recipeId 
+            ? { ...recipe, likes: response.data.likes } 
+            : recipe
+        ),
+        filteredRecipes: state.filteredRecipes.map((recipe) => 
+          recipe._id === recipeId 
+            ? { ...recipe, likes: response.data.likes } 
+            : recipe
+        )
+      }));
+    } catch (error) {
+      console.error("Error unliking recipe:", error);
+      set({ error: "Failed to unlike recipe" });
     }
   },
 

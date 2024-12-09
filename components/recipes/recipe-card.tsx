@@ -22,6 +22,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 interface RecipeCardProps {
   recipe: Recipe;
 }
@@ -29,6 +32,7 @@ interface RecipeCardProps {
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const { data: session } = useSession();
   const { deleteRecipe } = useRecipeStore();
   const { toast } = useToast();
@@ -42,6 +46,49 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     session?.user?.id &&
     recipe.author?._id &&
     session.user.id === recipe.author._id;
+
+  // Initialize liked status based on recipe data
+  useEffect(() => {
+    // Check if the current user has liked the recipe based on the recipe's likes array
+    if (session?.user?.id && recipe.likes) {
+      setIsLiked(recipe.likes.includes(session.user.id));
+    }
+  }, [session?.user?.id, recipe.likes]);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent link navigation
+
+    if (!session?.user?.id) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like a recipe.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/api/recipes/${recipe._id}/likes`);
+
+      // Update like status based on the new response
+      setIsLiked(response.data.hasLiked);
+
+      // Show toast with like/unlike status
+      toast({
+        title: response.data.hasLiked ? "Recipe Liked" : "Recipe Unliked",
+        description: response.data.hasLiked
+          ? "You've added this recipe to your favorites."
+          : "You've removed this recipe from your favorites.",
+      });
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update like status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -62,8 +109,31 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
   return (
     <>
-      <Link href={`/recipes/${recipe._id}`}>
+      <Link
+        href={`/recipes/${recipe._id}`}
+        className={cn(
+          "block",
+          isLiked && "bg-primary/10 rounded-lg" // Subtle background for liked recipes
+        )}
+      >
         <Card className="overflow-hidden hover:shadow-lg transition-shadow relative">
+          {/* Like Button */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-2 left-2 z-10 h-8 w-8"
+            onClick={handleLike}
+          >
+            <Heart
+              className={cn(
+                "h-5 w-5",
+                isLiked
+                  ? "fill-main text-main"
+                  : "text-muted-foreground hover:text-mainHover"
+              )}
+            />
+          </Button>
+
           {isAuthor && (
             <div className="absolute top-2 right-2 z-10 flex gap-2">
               <Button
@@ -126,8 +196,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               <span className="text-sm text-muted-foreground">
                 {recipe.isAnonymous
                   ? "Anonymous"
-                  : recipe?.author?.name === session?.user?.name
-                  ? "You"
                   : recipe?.author?.name || "Anonymous"}
               </span>
             </div>

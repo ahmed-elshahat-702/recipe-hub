@@ -266,7 +266,6 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
 
       router.push("/recipes");
     } catch (error) {
-      console.error("Error submitting recipe:", error);
       toast({
         title: "Error",
         description: "Failed to submit recipe. Please try again.",

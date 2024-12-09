@@ -6,11 +6,13 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EditRecipePage() {
   const params = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -18,7 +20,11 @@ export default function EditRecipePage() {
         const response = await axios.get<Recipe>(`/api/recipes/${params.id}`);
         setRecipe(response.data);
       } catch (error) {
-        console.error("Error fetching recipe:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch recipe. Please try again.",
+        });
       } finally {
         setIsLoading(false);
       }

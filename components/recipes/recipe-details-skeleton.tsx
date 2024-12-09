@@ -11,7 +11,7 @@ export function RecipeDetailsSkeleton() {
             <Skeleton className="h-64 w-full bg-main/60" />
           </div>
           <div className="p-6 space-y-4">
-            <div className="md:flex items-center justify-between">
+            <div className="space-y-2 md:flex items-center gap-2 justify-between">
               <Skeleton className="h-10 w-64 bg-main/60" />
               <div className="flex items-center gap-4">
                 <Skeleton className="h-6 w-20 bg-main/60" />

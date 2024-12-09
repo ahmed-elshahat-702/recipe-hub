@@ -39,7 +39,6 @@ export function RecipeComments({ recipeId }: RecipeCommentsProps) {
       const response = await axios.get(`/api/recipes/${recipeId}/comment`);
       setComments(response.data);
     } catch (error) {
-      console.error("Error fetching comments:", error);
       toast({
         title: "Error",
         description: "Failed to load comments",
@@ -84,7 +83,6 @@ export function RecipeComments({ recipeId }: RecipeCommentsProps) {
         description: "Comment added successfully",
       });
     } catch (error) {
-      console.error("Error adding comment:", error);
       toast({
         title: "Error",
         description: "Failed to add comment",

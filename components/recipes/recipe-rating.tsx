@@ -30,7 +30,11 @@ export function RecipeRating({ recipeId }: RecipeRatingProps) {
       setTotalRatings(totalRatings);
       setUserRating(userRating);
     } catch (error) {
-      console.error("Error fetching rating:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch rating. Please try again.",
+      });
     }
   };
 
@@ -62,7 +66,6 @@ export function RecipeRating({ recipeId }: RecipeRatingProps) {
         description: "Thank you for rating this recipe!",
       });
     } catch (error) {
-      console.error("Error rating recipe:", error);
       toast({
         title: "Error",
         description: "Failed to submit rating",

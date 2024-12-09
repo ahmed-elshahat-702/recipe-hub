@@ -84,7 +84,6 @@ export function AuthForm({ variant }: AuthFormProps) {
       });
 
       if (result?.error) {
-        console.log(result.error);
         if (result.error === "GoogleUserExists") {
           toast({
             variant: "destructive",
@@ -186,7 +185,6 @@ export function AuthForm({ variant }: AuthFormProps) {
             error.response.data.message || "Failed to create account",
         });
       } else {
-        console.error(error);
         toast({
           variant: "destructive",
           title: "Error",

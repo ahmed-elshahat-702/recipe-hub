@@ -19,6 +19,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 export interface User {
   _id: string;
@@ -42,6 +43,7 @@ export default function UserProfile({
   const [currentPage, setCurrentPage] = useState(1);
   const [user, setUser] = useState<User | null>(null);
   const [joinedDate, setJoinedDate] = useState("");
+  const { toast } = useToast();
 
   const fetchUser = async () => {
     const id = (await params).id;
@@ -56,7 +58,11 @@ export default function UserProfile({
       });
       setJoinedDate(joinedDateInfo);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch user profile. Please try again.",
+      });
     } finally {
       setIsUserLoading(false);
     }
@@ -76,7 +82,11 @@ export default function UserProfile({
             const response = await axios.get<Recipe>(`/api/recipes/${id}`);
             return response.data;
           } catch (error) {
-            console.warn(`Recipe with ID ${id} not found or inaccessible`);
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: `Recipe with ID ${id} not found or inaccessible`,
+            });
             return null;
           }
         })
@@ -95,7 +105,11 @@ export default function UserProfile({
 
       setProfileRecipes(validRecipes);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch user profile. Please try again.",
+      });
       setProfileRecipes([]);
     } finally {
       setIsRecipeLoading(false);

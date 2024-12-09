@@ -169,7 +169,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
                   />
                 </div>
                 <span className="text-sm font-medium">
-                  {recipe.author._id === user?._id ? "you" : recipe.author.name}
+                  {recipe.author.name}
                 </span>
                 <SquareArrowOutUpRight className="h-3 w-3 " />
               </Link>
