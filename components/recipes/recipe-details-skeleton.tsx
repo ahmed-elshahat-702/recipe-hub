@@ -19,6 +19,11 @@ export function RecipeDetailsSkeleton() {
               </div>
             </div>
             <Skeleton className="h-4 w-full bg-main/60" />
+            <Skeleton className="h-4 w-2/3 bg-main/60" />
+            <Skeleton className="h-4 w-1/3 bg-main/60" />
+            <Skeleton className="h-4 w-3/6 bg-main/60" />
+            <Skeleton className="h-4 w-5/6 bg-main/60" />
+            <Skeleton className="h-4 w-4/6 bg-main/60" />
           </div>
         </section>
         <div className="space-y-6">

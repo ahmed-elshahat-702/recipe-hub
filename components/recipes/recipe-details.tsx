@@ -78,12 +78,13 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
               <h1 className="text-2xl md:text-3xl font-bold text-foreground">
                 {recipe.title}
               </h1>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center max-md:justify-between gap-4">
                 <RecipeRating recipeId={recipe._id} />
                 <RecipeLikeButton
                   recipeId={recipe._id}
                   initialLikes={recipe.likes.length}
                   initialHasLiked={recipe.likes.includes(user?._id)}
+                  variant="default"
                 />
               </div>
             </div>

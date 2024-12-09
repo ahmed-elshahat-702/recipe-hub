@@ -90,13 +90,18 @@ export function Navigation() {
                       <AvatarImage
                         src={profile.image ?? "/default-avatar.png"}
                         alt={profile.name || "User"}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/default-avatar.png";
+                        }}
                       />
                       <AvatarFallback>
                         <Image
-                          src={profile.image ?? "/default-avatar.png"}
+                          src="/default-avatar.png"
                           alt={profile.name || "User"}
                           width={32}
                           height={32}
+                          priority
                         />
                       </AvatarFallback>
                     </Avatar>
@@ -110,7 +115,6 @@ export function Navigation() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut()}>
-                    {/* sign out icon */}
                     <LogOut className="mr-2 h-4 w-4 text-main" />
                     Log out
                   </DropdownMenuItem>

@@ -4,17 +4,20 @@ import { Heart } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { cn } from "@/lib/utils";
 
 interface RecipeLikeButtonProps {
   recipeId: string;
   initialLikes: number;
   initialHasLiked: boolean;
+  variant?: "card" | "default";
 }
 
 export function RecipeLikeButton({
   recipeId,
   initialLikes,
   initialHasLiked,
+  variant = "default",
 }: RecipeLikeButtonProps) {
   const [likes, setLikes] = useState(initialLikes);
   const [hasLiked, setHasLiked] = useState(initialHasLiked);
@@ -24,8 +27,6 @@ export function RecipeLikeButton({
 
   useEffect(() => {
     const fetchRecipeLikes = async () => {
-      if (!session?.user || !recipeId) return;
-
       try {
         const response = await axios.get(`/api/recipes/${recipeId}/likes`);
         const { likes: fetchedLikes, hasLiked: userHasLiked } =
@@ -94,6 +95,28 @@ export function RecipeLikeButton({
       setIsLoading(false);
     }
   };
+
+  if (variant === "card") {
+    return (
+      <Button
+        size="icon"
+        variant="ghost"
+        className="absolute top-2 left-2 z-10 h-8 w-8"
+        onClick={handleLike}
+        disabled={isLoading}
+      >
+        <Heart
+          className={cn(
+            "h-5 w-5 transition-all",
+            hasLiked
+              ? "fill-main text-main"
+              : "text-muted-foreground hover:text-mainHover",
+            isLoading && "opacity-50 cursor-not-allowed"
+          )}
+        />
+      </Button>
+    );
+  }
 
   return (
     <Button
