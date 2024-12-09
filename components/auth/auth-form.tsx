@@ -100,11 +100,11 @@ export function AuthForm({ variant }: AuthFormProps) {
           });
         }
       } else {
+        router.push(callbackUrl);
         toast({
           title: "Success",
           description: "Signed in successfully!",
         });
-        router.push(callbackUrl);
       }
     } catch (error) {
       toast({
@@ -120,12 +120,21 @@ export function AuthForm({ variant }: AuthFormProps) {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      await signIn("google", { callbackUrl });
-      toast({
-        title: "Success",
-        description: "Signed in successfully!",
-      });
-      router.push(callbackUrl);
+      const result = await signIn("google", { callbackUrl, redirect: false });
+      if (result?.error === "AccessDenied") {
+        toast({
+          title: "No Account Selected",
+          description: "Please select an account or create a new one.",
+        });
+      } else if (result?.url) {
+        router.push(result.url);
+      } else {
+        router.push(callbackUrl);
+        toast({
+          title: "Success",
+          description: "Signed in successfully!",
+        });
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -154,8 +163,6 @@ export function AuthForm({ variant }: AuthFormProps) {
           callbackUrl: "/",
         });
 
-        console.log(signInResult);
-
         if (signInResult?.error === "GoogleUserExists") {
           toast({
             variant: "destructive",
@@ -163,16 +170,13 @@ export function AuthForm({ variant }: AuthFormProps) {
             description:
               "That email is already signed in as a Google user. Please try to sign in with Google.",
           });
-        } else if (!signInResult?.error) {
-          toast({
-            title: "Success",
-            description: "Account created and signed in successfully!",
-          });
-          router.push(callbackUrl);
-        } else {
-          throw new Error(signInResult.error);
         }
       }
+      router.push(callbackUrl);
+      toast({
+        title: "Success",
+        description: "Account created and signed in successfully!",
+      });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         toast({
@@ -215,7 +219,9 @@ export function AuthForm({ variant }: AuthFormProps) {
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-md px-4 py-2 text-sm font-medium text-background bg-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            className={`flex w-full items-center justify-center gap-3 rounded-md px-4 py-2 text-sm font-medium text-background bg-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path

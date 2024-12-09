@@ -95,7 +95,7 @@ export function RecipeRating({ recipeId }: RecipeRatingProps) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col justify-center items-center">
       <div className="flex items-center gap-2">
         <div className="flex">
           {[1, 2, 3, 4, 5].map((position) => renderStar(position))}
@@ -104,11 +104,11 @@ export function RecipeRating({ recipeId }: RecipeRatingProps) {
           ({totalRatings} {totalRatings === 1 ? "rating" : "ratings"})
         </span>
       </div>
-      {/* {averageRating > 0 && (
+      {averageRating > 0 && (
         <p className="text-sm text-muted-foreground">
           Average rating: {averageRating.toFixed(1)} / 5
         </p>
-      )} */}
+      )}
       {/* {userRating && (
         <p className="text-sm text-muted-foreground">
           Your rating: {userRating} / 5

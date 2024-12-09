@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
 import axios from "axios";
+import Image from "next/image";
 
 export function Navigation() {
   const { data: session, status } = useSession();
@@ -81,11 +82,16 @@ export function Navigation() {
                   >
                     <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
-                        src={profile.image ?? undefined}
+                        src={profile.image ?? "/default-avatar.png"}
                         alt={profile.name || "User"}
                       />
                       <AvatarFallback>
-                        {profile.name?.[0]?.toUpperCase() || "U"}
+                        <Image
+                          src={profile.image ?? "/default-avatar.png"}
+                          alt={profile.name || "User"}
+                          width={32}
+                          height={32}
+                        />
                       </AvatarFallback>
                     </Avatar>
                   </Button>
