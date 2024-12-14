@@ -33,8 +33,10 @@ interface RecipeStore {
   deleteRecipe: (recipeId: string) => Promise<void>;
   filterAndSortRecipes: () => void;
   setPage: (page: number) => void;
-  likeRecipe: (recipeId: string, userId: string) => Promise<void>;
-  unlikeRecipe: (recipeId: string, userId: string) => Promise<void>;
+  profileRecipes: Recipe[];
+  fetchProfileRecipes: (userId: string) => Promise<void>;
+  addProfileRecipe: (recipe: Recipe) => void;
+  removeProfileRecipe: (recipeId: string) => void;
 }
 
 export const useRecipeStore = create<RecipeStore>((set, get) => ({
@@ -80,6 +82,8 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     const store = get();
     store.fetchRecipes();
   },
+
+  profileRecipes: [],
 
   fetchRecipes: async () => {
     set({ isLoading: true, error: null });
@@ -203,54 +207,6 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     }
   },
 
-  likeRecipe: async (recipeId: string, userId: string) => {
-    try {
-      const response = await axios.post(`/api/recipes/${recipeId}/likes`, { userId });
-      
-      // Update the likes in the local state
-      set((state) => ({
-        recipes: state.recipes.map((recipe) => 
-          recipe._id === recipeId 
-            ? { ...recipe, likes: response.data.likes } 
-            : recipe
-        ),
-        filteredRecipes: state.filteredRecipes.map((recipe) => 
-          recipe._id === recipeId 
-            ? { ...recipe, likes: response.data.likes } 
-            : recipe
-        )
-      }));
-    } catch (error) {
-      console.error("Error liking recipe:", error);
-      set({ error: "Failed to like recipe" });
-    }
-  },
-
-  unlikeRecipe: async (recipeId: string, userId: string) => {
-    try {
-      const response = await axios.delete(`/api/recipes/${recipeId}/likes`, { 
-        data: { userId } 
-      });
-      
-      // Update the likes in the local state
-      set((state) => ({
-        recipes: state.recipes.map((recipe) => 
-          recipe._id === recipeId 
-            ? { ...recipe, likes: response.data.likes } 
-            : recipe
-        ),
-        filteredRecipes: state.filteredRecipes.map((recipe) => 
-          recipe._id === recipeId 
-            ? { ...recipe, likes: response.data.likes } 
-            : recipe
-        )
-      }));
-    } catch (error) {
-      console.error("Error unliking recipe:", error);
-      set({ error: "Failed to unlike recipe" });
-    }
-  },
-
   filterAndSortRecipes: () => {
     const { recipes, searchQuery, selectedCategory, sortBy } = get();
 
@@ -291,5 +247,43 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     });
 
     set({ filteredRecipes: filtered });
+  },
+
+  fetchProfileRecipes: async (userId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.get(`/api/user/${userId}`);
+      const profileRecipes: Recipe[] =
+        response.data?.user?.createdRecipes ?? [];
+
+      // Sort recipes by creation date (newest first)
+      profileRecipes.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      set({ profileRecipes, isLoading: false });
+    } catch (error) {
+      console.error("Failed to fetch profile recipes:", error);
+      set({
+        profileRecipes: [],
+        isLoading: false,
+        error: "Failed to fetch profile recipes",
+      });
+    }
+  },
+
+  addProfileRecipe: (recipe) => {
+    set((state) => ({
+      profileRecipes: [recipe, ...state.profileRecipes],
+    }));
+  },
+
+  removeProfileRecipe: (recipeId) => {
+    set((state) => ({
+      profileRecipes: state.profileRecipes.filter(
+        (recipe) => recipe._id !== recipeId
+      ),
+    }));
   },
 }));

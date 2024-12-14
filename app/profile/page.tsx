@@ -22,122 +22,29 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useProfile } from "@/hooks/use-profile";
-import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRecipeStore } from "@/store/use-recipe-store";
+import { useRecipeInteractions } from "@/store/recipe-interactions";
 
 export default function ProfilePage() {
-  const [profileRecipes, setProfileRecipes] = useState<Recipe[] | null>(null);
-  const [likedRecipes, setLikedRecipes] = useState<Recipe[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = useSession();
   const { profile } = useProfile();
-  const { toast } = useToast();
 
-  const fetchProfileRecipes = async () => {
-    if (!session?.user?.id) return;
-    try {
-      setIsLoading(true);
-      const response = await axios.get(`/api/user/${session.user.id}`);
-      const profileRecipesIDs: string[] = response.data.user.createdRecipes;
+  const { profileRecipes, isLoading, fetchProfileRecipes } = useRecipeStore();
 
-      // Fetch all recipes in parallel and filter out any failed requests
-      const profileRecipesData = await Promise.all(
-        profileRecipesIDs.map(async (id) => {
-          try {
-            const response = await axios.get<Recipe>(`/api/recipes/${id}`);
-            return response.data;
-          } catch (error) {
-            toast({
-              variant: "destructive",
-              description: `Recipe with ID ${id} not found or inaccessible`,
-            });
-            return null;
-          }
-        })
-      );
-
-      // Filter out null values before setting state
-      const validRecipes = profileRecipesData.filter(
-        (recipe): recipe is Recipe => recipe !== null
-      );
-
-      // Sort recipes by creation date (newest first)
-      validRecipes.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      setProfileRecipes(validRecipes);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch user profile",
-      });
-      setProfileRecipes([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchLikedRecipes = async () => {
-    if (!session?.user?.id) return;
-    try {
-      setIsLoading(true);
-      const response = await axios.get(`/api/user/${session.user.id}`);
-      const likedRecipesIDs: string[] = response.data.user.likedRecipes;
-
-      // Fetch all recipes in parallel and filter out any failed requests
-      const likedRecipesData = await Promise.all(
-        likedRecipesIDs.map(async (id) => {
-          try {
-            const response = await axios.get<Recipe>(`/api/recipes/${id}`);
-            return response.data;
-          } catch (error) {
-            toast({
-              variant: "destructive",
-              description: `Recipe with ID ${id} not found or inaccessible`,
-            });
-            return null;
-          }
-        })
-      );
-
-      // Filter out null values before setting state
-      const validRecipes = likedRecipesData.filter(
-        (recipe): recipe is Recipe => recipe !== null
-      );
-
-      // Sort recipes by creation date (newest first)
-      validRecipes.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      setLikedRecipes(validRecipes);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch user profile",
-      });
-      setLikedRecipes([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { fetchLikedRecipes, likedRecipes } = useRecipeInteractions();
 
   useEffect(() => {
-    if (session) {
-      fetchProfileRecipes();
-      fetchLikedRecipes();
+    if (session?.user?.id) {
+      fetchProfileRecipes(session.user.id);
+      fetchLikedRecipes(session.user.id);
     }
   }, [session]);
 
   return (
     <div className="container mx-auto py-8">
-      {session && profile ? (
+      {session && session.user && profile ? (
         <Card className="mb-8">
           <CardHeader className="flex flex-row items-center justify-between relative">
             <div className="flex items-center gap-4">
@@ -227,9 +134,9 @@ export default function ProfilePage() {
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            if (currentPage > 1) {
+                            if (currentPage > 1 && session?.user?.id) {
                               setCurrentPage(currentPage - 1);
-                              fetchProfileRecipes();
+                              fetchProfileRecipes(session.user.id);
                             }
                           }}
                         />
@@ -246,7 +153,9 @@ export default function ProfilePage() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 setCurrentPage(pageNumber);
-                                fetchProfileRecipes();
+                                if (session?.user?.id) {
+                                  fetchProfileRecipes(session.user.id);
+                                }
                               }}
                             >
                               {pageNumber}
@@ -260,10 +169,12 @@ export default function ProfilePage() {
                           onClick={(e) => {
                             e.preventDefault();
                             if (
-                              currentPage < Math.ceil(profileRecipes.length / 12)
+                              currentPage <
+                                Math.ceil(profileRecipes.length / 12) &&
+                              session?.user?.id
                             ) {
                               setCurrentPage(currentPage + 1);
-                              fetchProfileRecipes();
+                              fetchProfileRecipes(session.user.id);
                             }
                           }}
                         />
@@ -310,9 +221,7 @@ export default function ProfilePage() {
                   You haven't liked any recipes yet.
                 </p>
                 <Link href="/recipes">
-                  <Button>
-                    Explore Recipes
-                  </Button>
+                  <Button>Explore Recipes</Button>
                 </Link>
               </div>
             ))

@@ -11,15 +11,25 @@ export async function GET(
     const { id } = await context.params;
     await connectDB();
 
-    const user = await User.findById(id).populate({
-      path: "likedRecipes",
-      model: Recipe,
-      populate: {
-        path: "author",
-        model: "User",
-        select: "name image",
-      },
-    });
+    const user = await User.findById(id)
+      .populate({
+        path: "likedRecipes",
+        model: Recipe,
+        populate: {
+          path: "author",
+          model: "User",
+          select: "name image",
+        },
+      })
+      .populate({
+        path: "createdRecipes",
+        model: Recipe,
+        populate: {
+          path: "author",
+          model: "User",
+          select: "name image",
+        },
+      });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -32,6 +42,7 @@ export async function GET(
         email: user.email,
         image: user.image,
         likedRecipes: user.likedRecipes,
+        createdRecipes: user.createdRecipes,
       },
     });
   } catch (error) {
