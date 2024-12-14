@@ -79,7 +79,7 @@ export function Navigation() {
             <ModeToggle />
             {status === "loading" ? (
               <Skeleton className="w-8 h-8 rounded-full bg-main/80" />
-            ) : session && profile ? (
+            ) : session && session.user && profile ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -88,11 +88,13 @@ export function Navigation() {
                   >
                     <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
-                        src={profile.image ?? "/default-avatar.png"}
+                        src={profile.image || "/default-avatar.png"}
                         alt={profile.name || "User"}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "/default-avatar.png";
+                          target.width = 32;
+                          target.height = 32;
                         }}
                       />
                       <AvatarFallback>

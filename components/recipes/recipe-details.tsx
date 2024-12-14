@@ -193,7 +193,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
       </section>
       {/* Comments Section */}
       <section className="mt-8 bg-card rounded-lg shadow-sm p-6 border border-main/20">
-        <RecipeComments recipeId={recipe._id} />
+        <RecipeComments recipeId={recipe._id} recipe={recipe} user={user} />
       </section>
     </div>
   );

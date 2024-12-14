@@ -4,6 +4,39 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/auth-options";
 import { connectDB } from "@/lib/db/connect";
 
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connectDB();
+    const { id } = await context.params;
+
+    const recipe = await Recipe.findById(id).populate([
+      {
+        path: "comments.user",
+        select: "name image",
+      },
+      {
+        path: "comments.replies.user",
+        select: "name image",
+      },
+    ]);
+
+    if (!recipe) {
+      return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(recipe.comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch comments" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   req: Request,
   context: { params: Promise<{ id: string }> }
@@ -56,33 +89,6 @@ export async function POST(
     console.error("Error adding comment:", error);
     return NextResponse.json(
       { error: "Failed to add comment" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET(
-  req: Request,
-  context: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectDB();
-    const { id } = await context.params;
-
-    const recipe = await Recipe.findById(id).populate({
-      path: "comments.user",
-      select: "name image",
-    });
-
-    if (!recipe) {
-      return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(recipe.comments);
-  } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch comments" },
       { status: 500 }
     );
   }

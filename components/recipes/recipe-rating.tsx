@@ -119,14 +119,14 @@ export function RecipeRating({ recipeId }: RecipeRatingProps) {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col">
       <div className="flex items-center gap-2">
         <div className="flex">
           {[1, 2, 3, 4, 5].map((position) => renderStar(position))}
         </div>
         {!isLoading ? (
           <span className="text-sm text-muted-foreground">
-            {totalRatings} {totalRatings === 1 ? "rating" : "ratings"}
+            ( {totalRatings} )
           </span>
         ) : (
           <Skeleton className="w-14 h-5 bg-main/60" />
