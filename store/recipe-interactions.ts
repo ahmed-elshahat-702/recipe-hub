@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { Recipe } from "@/lib/types/recipe";
+import useSWR, { mutate } from "swr";
 
 interface Comment {
   _id: string;
@@ -58,8 +59,9 @@ interface RecipeInteractionsStore {
   setLikes: (recipeId: string, likes: string[]) => void;
 
   likedRecipes: Recipe[];
-  fetchLikedRecipes: (userId: string) => Promise<void>;
 }
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export const useRecipeInteractions = create<RecipeInteractionsStore>(
   (set, get) => ({
@@ -300,76 +302,63 @@ export const useRecipeInteractions = create<RecipeInteractionsStore>(
       }),
 
     toggleLike: async (recipeId, userId) => {
-      // Perform the async operation first
       set((state) => ({ ...state, isLoading: true }));
 
       try {
-        const response = await axios.post(`/api/recipes/${recipeId}/like`, {
+        const response = await axios.post(`/api/recipes/${recipeId}/likes`, {
           userId,
         });
-        const { likes, totalLikes } = response.data;
+        const { likes, hasLiked } = response.data;
 
-        // Find the full recipe object
-        const fullRecipe =
-          get().likedRecipes.find((r) => r._id === recipeId) ||
-          (await axios.get(`/api/recipes/${recipeId}`)).data;
-
-        // Update interactions state
-        set((state_2) => {
-          // Create a new likedRecipes array
-          const updatedLikedRecipes = likes.includes(userId)
-            ? // If user liked the recipe, add to the beginning of the array if not already present
-              state_2.likedRecipes.some((r) => r._id === recipeId)
-              ? state_2.likedRecipes
-              : [fullRecipe, ...state_2.likedRecipes]
-            : // If user unliked the recipe, remove it from likedRecipes
-              state_2.likedRecipes.filter((r) => r._id !== recipeId);
+        set((state) => {
+          const updatedLikedRecipes = hasLiked
+            ? [{ _id: recipeId } as Recipe, ...state.likedRecipes]
+            : state.likedRecipes.filter((recipe) => recipe._id !== recipeId);
 
           return {
-            isLoading: false,
+            ...state,
             interactions: {
-              ...state_2.interactions,
+              ...state.interactions,
               [recipeId]: {
-                ...state_2.interactions[recipeId],
+                ...state.interactions[recipeId],
                 likes,
-                totalLikes,
+                hasLiked,
               } as RecipeInteraction,
             },
             likedRecipes: updatedLikedRecipes,
+            isLoading: false,
           };
         });
+
+        // Revalidate the liked recipes data
+        mutate(`/api/user/${userId}/liked-recipes`);
 
         return response.data;
       } catch (error) {
         console.error("Error toggling like:", error);
-        set((state_3) => ({ ...state_3, isLoading: false }));
+        set((state) => ({ ...state, isLoading: false }));
         throw error;
-      } finally {
-        set((state_4) => ({ ...state_4, isLoading: false }));
-      }
-    },
-
-    fetchLikedRecipes: async (userId) => {
-      set({ isLoading: true, error: null });
-      try {
-        const response = await axios.get(`/api/user/${userId}`);
-        const likedRecipes: Recipe[] = response.data?.user?.likedRecipes ?? [];
-
-        // Sort recipes by creation date (newest first)
-        likedRecipes.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-
-        set({ likedRecipes, isLoading: false });
-      } catch (error) {
-        console.error("Failed to fetch liked recipes:", error);
-        set({
-          likedRecipes: [],
-          isLoading: false,
-          error: "Failed to fetch liked recipes",
-        });
       }
     },
   })
 );
+
+// SWR hook for real-time fetching of likes
+export const useRealTimeLikedRecipes = (userId: string) => {
+  const { data, error, mutate } = useSWR(
+    userId ? `/api/user/${userId}/liked-recipes` : null,
+    fetcher
+  );
+
+  // Function to manually trigger revalidation
+  const revalidate = () => {
+    mutate();
+  };
+
+  return {
+    likedRecipes: data?.likedRecipes || [],
+    isLoading: !error && !data,
+    isError: error,
+    revalidate,
+  };
+};

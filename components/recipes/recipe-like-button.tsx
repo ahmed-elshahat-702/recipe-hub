@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { cn } from "@/lib/utils";
+import { useRecipeInteractions } from "@/store/recipe-interactions";
 
 interface RecipeLikeButtonProps {
   recipeId: string;
@@ -24,6 +25,7 @@ export function RecipeLikeButton({
   const [isLoading, setIsLoading] = useState(true);
   const { data: session } = useSession();
   const { toast } = useToast();
+  const { toggleLike } = useRecipeInteractions();
 
   useEffect(() => {
     const fetchRecipeLikes = async () => {
@@ -61,40 +63,61 @@ export function RecipeLikeButton({
       toast({
         title: "Please log in",
         description: "You must be logged in to like recipes",
-        variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      // Optimistic update only if not already liked
-      const updatedHasLiked = !hasLiked;
-      const updatedLikes = updatedHasLiked ? likes + 1 : likes - 1;
-
-      setHasLiked(updatedHasLiked);
-      setLikes(updatedLikes);
-
-      const response = await axios.post(`/api/recipes/${recipeId}/likes`);
-      const { likes: newLikes, hasLiked: newHasLiked } = response.data;
-
-      // Update with actual values from server
-      setLikes(newLikes);
-      setHasLiked(newHasLiked);
+      toggleLike(recipeId, session.user.id);
+      setHasLiked(!hasLiked);
+      setLikes(hasLiked ? likes - 1 : likes + 1);
     } catch (error) {
-      // Revert optimistic update on error
-      setHasLiked(hasLiked);
-      setLikes(likes);
-
-      toast({
-        title: "Error",
-        description: "Failed to like recipe. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Error liking recipe:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // const handleLike = async () => {
+  //   if (!session) {
+  //     toast({
+  //       title: "Please log in",
+  //       description: "You must be logged in to like recipes",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   try {
+  //     // Optimistic update only if not already liked
+  //     const updatedHasLiked = !hasLiked;
+  //     const updatedLikes = updatedHasLiked ? likes + 1 : likes - 1;
+
+  //     setHasLiked(updatedHasLiked);
+  //     setLikes(updatedLikes);
+
+  //     const response = await axios.post(`/api/recipes/${recipeId}/likes`);
+  //     const { likes: newLikes, hasLiked: newHasLiked } = response.data;
+
+  //     // Update with actual values from server
+  //     setLikes(newLikes);
+  //     setHasLiked(newHasLiked);
+  //   } catch (error) {
+  //     // Revert optimistic update on error
+  //     setHasLiked(hasLiked);
+  //     setLikes(likes);
+
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to like recipe. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   if (variant === "card") {
     return (

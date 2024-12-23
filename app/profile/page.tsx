@@ -3,7 +3,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecipeCard } from "@/components/recipes/recipe-card";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
 import { useSession } from "next-auth/react";
@@ -24,7 +23,7 @@ import {
 import { useProfile } from "@/hooks/use-profile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRecipeStore } from "@/store/use-recipe-store";
-import { useRecipeInteractions } from "@/store/recipe-interactions";
+import { useRealTimeLikedRecipes } from "@/store/recipe-interactions";
 
 export default function ProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,14 +32,13 @@ export default function ProfilePage() {
 
   const { profileRecipes, isLoading, fetchProfileRecipes } = useRecipeStore();
 
-  const { fetchLikedRecipes, likedRecipes } = useRecipeInteractions();
+  const { likedRecipes } = useRealTimeLikedRecipes(session?.user?.id ?? "");
 
   useEffect(() => {
     if (session?.user?.id) {
       fetchProfileRecipes(session.user.id);
-      fetchLikedRecipes(session.user.id);
     }
-  }, [session]);
+  }, [session?.user?.id]);
 
   return (
     <div className="container mx-auto py-8">
@@ -210,11 +208,58 @@ export default function ProfilePage() {
           ) : (
             likedRecipes &&
             (likedRecipes.length > 0 ? (
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {likedRecipes.map((recipe) => (
-                  <RecipeCard key={recipe._id} recipe={recipe} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {likedRecipes.map((recipe: Recipe) => (
+                    <RecipeCard key={recipe._id} recipe={recipe} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {likedRecipes.length > 12 && (
+                  <Pagination className="mt-8">
+                    <PaginationContent>
+                      {Array.from({
+                        length: Math.ceil(likedRecipes.length / 12),
+                      }).map((_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(pageNumber);
+                                if (session?.user?.id) {
+                                  fetchProfileRecipes(session.user.id);
+                                }
+                              }}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      <PaginationItem key="next">
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (
+                              currentPage <
+                                Math.ceil(likedRecipes.length / 12) &&
+                              session?.user?.id
+                            ) {
+                              setCurrentPage(currentPage + 1);
+                              fetchProfileRecipes(session.user.id);
+                            }
+                          }}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </>
             ) : (
               <div className="w-full text-center">
                 <p className="text-muted-foreground mb-4">
