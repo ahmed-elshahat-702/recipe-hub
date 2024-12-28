@@ -40,6 +40,13 @@ export const metadata: Metadata = {
     {
       rel: "icon",
       type: "image/png",
+      sizes: "96x96",
+      href: "/icons/favicon-96x96.png",
+      url: "/icons/favicon-96x96.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
       sizes: "192x192",
       href: "/icons/android-chrome-192x192.png",
       url: "/icons/android-chrome-192x192.png",
@@ -50,6 +57,19 @@ export const metadata: Metadata = {
       sizes: "512x512",
       href: "/icons/android-chrome-512x512.png",
       url: "/icons/android-chrome-512x512.png",
+    },
+    {
+      rel: "icon",
+      type: "image/svg+xml",
+      url: "/favicon.svg",
+    },
+    {
+      rel: "shortcut icon",
+      url: "/favicon.ico",
+    },
+    {
+      rel: "manifest",
+      url: "/icons/site.webmanifest",
     },
   ],
 };
