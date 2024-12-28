@@ -1,3 +1,5 @@
+"use client";
+
 const error = () => {
   const handleReload = () => {
     window.location.reload();
