@@ -11,8 +11,8 @@ import { authOptions } from "@/app/api/auth/auth-options";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Sign Up - RecipeShare",
-  description: "Create your RecipeShare account",
+  title: "Sign Up - RecipeHub",
+  description: "Create your RecipeHub account",
 };
 
 export default async function SignUpPage() {

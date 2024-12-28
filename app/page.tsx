@@ -35,7 +35,7 @@ export default function Home() {
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">
-            Why Join RecipeShare?
+            Why Join RecipeHub?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">

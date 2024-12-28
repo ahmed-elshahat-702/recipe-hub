@@ -10,8 +10,8 @@ import { authOptions } from "@/app/api/auth/auth-options";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Sign In - RecipeShare",
-  description: "Sign in to your RecipeShare account",
+  title: "Sign In - RecipeHub",
+  description: "Sign in to your RecipeHub account",
 };
 
 export default async function SignInPage() {

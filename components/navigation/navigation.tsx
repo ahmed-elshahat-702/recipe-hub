@@ -56,7 +56,7 @@ export function Navigation() {
           <div className="flex">
             <Link href="/" className="flex items-center">
               <CookingPot className="h-6 w-6 mr-2 text-main" />
-              <span className="font-bold text-xl text-main">RecipeShare</span>
+              <span className="font-bold text-xl text-main">RecipeHub</span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link

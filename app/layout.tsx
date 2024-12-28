@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Navigation } from "@/components/navigation/navigation";
 
 export const metadata: Metadata = {
-  title: "RecipeShare - Share Your Culinary Creations",
+  title: "RecipeHub - Share Your Culinary Creations",
   description:
     "A community-driven platform for sharing and discovering recipes",
 };
