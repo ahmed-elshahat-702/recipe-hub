@@ -3,9 +3,9 @@ import React from "react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { Navigation } from "@/components/navigation";
 import AuthProvider from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
+import { Navigation } from "@/components/navigation/navigation";
 
 export const metadata: Metadata = {
   title: "RecipeShare - Share Your Culinary Creations",
