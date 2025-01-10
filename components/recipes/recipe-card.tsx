@@ -129,35 +129,39 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         </Link>
         <CardFooter className="p-4 pt-0">
           <div className="flex items-center space-x-2">
-            <Link
-              href={isAuthor ? "/profile" : `/profile/${recipe?.author?._id}`}
-              className="flex items-center gap-2 text-main hover:text-mainHover"
-            >
-              <div className="relative h-6 w-6 rounded-full overflow-hidden border-2 border-main">
-                <Image
-                  src={
-                    recipe.isAnonymous
-                      ? "/images/anonymous-avatar.png"
-                      : recipe?.author?.image || "/images/default-avatar.jpg"
-                  }
-                  alt={
-                    recipe.isAnonymous
-                      ? "Anonymous User"
-                      : recipe?.author?.name || "Anonymous"
-                  }
-                  fill
-                  className="object-cover"
-                />
+            {recipe.isAnonymous ? (
+              <div className="flex items-center gap-2 ">
+                <div className="relative h-6 w-6 rounded-full overflow-hidden border-2 border-main">
+                  <Image
+                    src="/images/anonymous-avatar.png"
+                    alt="Anonymous User"
+                    fill
+                    className="p-[1px] object-cover bg-secondary"
+                  />
+                </div>
+                <span className="text-sm text-main">Anonymous</span>
               </div>
-              <div className="flex items-center gap-1">
-                <span className="text-sm">
-                  {recipe.isAnonymous
-                    ? "Anonymous"
-                    : recipe?.author?.name || "Anonymous"}
-                </span>
-                <SquareArrowOutUpRight className="h-3 w-3 ml-1" />
-              </div>
-            </Link>
+            ) : (
+              <Link
+                href={isAuthor ? "/profile" : `/profile/${recipe?.author?._id}`}
+                className="flex items-center gap-2 text-main hover:text-mainHover"
+              >
+                <div className="relative h-6 w-6 rounded-full overflow-hidden border-2 border-main">
+                  <Image
+                    src={recipe?.author?.image || "/images/default-avatar.jpg"}
+                    alt={recipe?.author?.name || "Anonymous"}
+                    fill
+                    className="object-cover bg-secondary"
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm">
+                    {recipe?.author?.name || "Anonymous"}
+                  </span>
+                  <SquareArrowOutUpRight className="h-3 w-3 ml-1" />
+                </div>
+              </Link>
+            )}
           </div>
         </CardFooter>
       </Card>

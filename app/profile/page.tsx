@@ -56,8 +56,9 @@ export default function ProfilePage() {
                   <Image
                     src="/images/default-avatar.jpg"
                     alt={profile.name || "User"}
-                    width={32}
-                    height={32}
+                    width={80}
+                    height={80}
+                    className="w-full h-full"
                     priority
                   />
                 </AvatarFallback>
@@ -106,7 +107,9 @@ export default function ProfilePage() {
 
       <Tabs defaultValue="myRecipes" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="myRecipes">My Recipes</TabsTrigger>
+          <TabsTrigger value="myRecipes">
+            My Recipes ({profileRecipes.length})
+          </TabsTrigger>
           <TabsTrigger value="likedRecipes">Liked Recipes</TabsTrigger>
         </TabsList>
 
@@ -114,7 +117,7 @@ export default function ProfilePage() {
           <h2 className="text-xl sm:text-2xl font-bold mb-4">My Recipes</h2>
           {isLoading ? (
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 12 }).map((_, index) => (
+              {Array.from({ length: 8 }).map((_, index) => (
                 <RecipeCardSkeleton key={index} />
               ))}
             </div>
@@ -124,14 +127,14 @@ export default function ProfilePage() {
               <>
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {profileRecipes
-                    .slice((currentPage - 1) * 12, currentPage * 12)
+                    .slice((currentPage - 1) * 8, currentPage * 8)
                     .map((recipe) => (
                       <RecipeCard key={recipe._id} recipe={recipe} />
                     ))}
                 </div>
 
                 {/* Pagination */}
-                {profileRecipes.length > 12 && (
+                {profileRecipes.length > 8 && (
                   <Pagination className="mt-8">
                     <PaginationContent>
                       <PaginationItem>
@@ -147,7 +150,7 @@ export default function ProfilePage() {
                         />
                       </PaginationItem>
                       {Array.from({
-                        length: Math.ceil(profileRecipes.length / 12),
+                        length: Math.ceil(profileRecipes.length / 8),
                       }).map((_, index) => {
                         const pageNumber = index + 1;
                         return (
@@ -175,7 +178,7 @@ export default function ProfilePage() {
                             e.preventDefault();
                             if (
                               currentPage <
-                                Math.ceil(profileRecipes.length / 12) &&
+                                Math.ceil(profileRecipes.length / 8) &&
                               session?.user?.id
                             ) {
                               setCurrentPage(currentPage + 1);
@@ -208,7 +211,7 @@ export default function ProfilePage() {
           <h2 className="text-xl sm:text-2xl font-bold mb-4">Liked Recipes</h2>
           {isLoading ? (
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 12 }).map((_, index) => (
+              {Array.from({ length: 8 }).map((_, index) => (
                 <RecipeCardSkeleton key={index} />
               ))}
             </div>
@@ -223,11 +226,11 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Pagination */}
-                {likedRecipes.length > 12 && (
+                {likedRecipes.length > 8 && (
                   <Pagination className="mt-8">
                     <PaginationContent>
                       {Array.from({
-                        length: Math.ceil(likedRecipes.length / 12),
+                        length: Math.ceil(likedRecipes.length / 8),
                       }).map((_, index) => {
                         const pageNumber = index + 1;
                         return (
@@ -254,7 +257,7 @@ export default function ProfilePage() {
                             e.preventDefault();
                             if (
                               currentPage <
-                                Math.ceil(likedRecipes.length / 12) &&
+                                Math.ceil(likedRecipes.length / 8) &&
                               session?.user?.id
                             ) {
                               setCurrentPage(currentPage + 1);

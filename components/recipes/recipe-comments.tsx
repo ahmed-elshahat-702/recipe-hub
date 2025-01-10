@@ -405,12 +405,6 @@ export function RecipeComments({
                     <AvatarImage
                       src={comment.user.image || "/images/default-avatar.jpg"}
                       alt={comment.user.name || "User"}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/images/default-avatar.jpg";
-                        target.width = 32;
-                        target.height = 32;
-                      }}
                     />
                     <AvatarFallback>
                       <Image
@@ -606,12 +600,6 @@ export function RecipeComments({
                               reply.user.image || "/images/default-avatar.jpg"
                             }
                             alt={reply.user.name || "User"}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/images/default-avatar.jpg";
-                              target.width = 32;
-                              target.height = 32;
-                            }}
                           />
                           <AvatarFallback>
                             <Image

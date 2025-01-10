@@ -65,10 +65,10 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
             ) : (
               <div className="relative h-44 sm:h-64">
                 <Image
-                  src={recipe?.images?.[0] ?? "/images/placeholder-image.jpg"}
+                  src={recipe?.images?.[0] ?? "/images/recipe-placeholder.jpg"}
                   alt={`${recipe.title} - Image`}
                   fill
-                  className="w-full h-full rounded"
+                  className="object-cover"
                 />
               </div>
             )}
@@ -153,27 +153,41 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
           <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
             <h2 className="text-lg font-semibold mb-3 text-main">Author</h2>
             {recipe.author && user ? (
-              <Link
-                href={
-                  recipe.author._id === user?._id
-                    ? "/profile"
-                    : `/profile/${recipe.author._id}`
-                }
-                className="inline-flex items-center space-x-2 text-main hover:text-mainHover"
-              >
-                <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
-                  <Image
-                    src={recipe.author.image || "/images/default-avatar.jpg"}
-                    alt={recipe.author.name}
-                    fill
-                    className="object-cover"
-                  />
+              recipe.isAnonymous ? (
+                <div className="flex items-center space-x-2 text-main">
+                  <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
+                    <Image
+                      src="/images/anonymous-avatar.png"
+                      alt="Anonymous"
+                      fill
+                      className="object-cover p-[1px]"
+                    />
+                  </div>
+                  <span className="text-sm font-medium">Anonymous</span>
                 </div>
-                <span className="text-sm font-medium">
-                  {recipe.author.name}
-                </span>
-                <SquareArrowOutUpRight className="h-3 w-3 " />
-              </Link>
+              ) : (
+                <Link
+                  href={
+                    recipe.author._id === user?._id
+                      ? "/profile"
+                      : `/profile/${recipe.author._id}`
+                  }
+                  className="inline-flex items-center space-x-2 text-main hover:text-mainHover"
+                >
+                  <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
+                    <Image
+                      src={recipe.author.image || "/images/default-avatar.jpg"}
+                      alt={recipe.author.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-sm font-medium">
+                    {recipe.author.name}
+                  </span>
+                  <SquareArrowOutUpRight className="h-3 w-3 " />
+                </Link>
+              )
             ) : (
               <Skeleton className="w-52 h-5 bg-main" />
             )}
