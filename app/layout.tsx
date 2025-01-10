@@ -61,11 +61,11 @@ export const metadata: Metadata = {
     {
       rel: "icon",
       type: "image/svg+xml",
-      url: "/favicon.svg",
+      url: "/icons/favicon.svg",
     },
     {
       rel: "shortcut icon",
-      url: "/favicon.ico",
+      url: "/icons/favicon.ico",
     },
     {
       rel: "manifest",

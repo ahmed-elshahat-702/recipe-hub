@@ -403,18 +403,18 @@ export function RecipeComments({
                   {/* Avatar */}
                   <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
                     <AvatarImage
-                      src={comment.user.image || "/default-avatar.png"}
+                      src={comment.user.image || "/images/default-avatar.jpg"}
                       alt={comment.user.name || "User"}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "/default-avatar.png";
+                        target.src = "/images/default-avatar.jpg";
                         target.width = 32;
                         target.height = 32;
                       }}
                     />
                     <AvatarFallback>
                       <Image
-                        src="/images/default-avatar.png"
+                        src="/images/default-avatar.jpg"
                         alt={comment.user.name || "User"}
                         width={32}
                         height={32}
@@ -602,18 +602,20 @@ export function RecipeComments({
                         {/* Avatar */}
                         <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
                           <AvatarImage
-                            src={reply.user.image || "/default-avatar.png"}
+                            src={
+                              reply.user.image || "/images/default-avatar.jpg"
+                            }
                             alt={reply.user.name || "User"}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = "/default-avatar.png";
+                              target.src = "/images/default-avatar.jpg";
                               target.width = 32;
                               target.height = 32;
                             }}
                           />
                           <AvatarFallback>
                             <Image
-                              src="/images/default-avatar.png"
+                              src="/images/default-avatar.jpg"
                               alt={reply.user.name || "User"}
                               width={32}
                               height={32}

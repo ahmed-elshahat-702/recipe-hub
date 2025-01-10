@@ -88,18 +88,12 @@ export function Navigation() {
                   >
                     <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
-                        src={profile.image || "/default-avatar.png"}
+                        src={profile.image || "/images/default-avatar.jpg"}
                         alt={profile.name || "User"}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/default-avatar.png";
-                          target.width = 32;
-                          target.height = 32;
-                        }}
                       />
                       <AvatarFallback>
                         <Image
-                          src="/images/default-avatar.png"
+                          src="/images/default-avatar.jpg"
                           alt={profile.name || "User"}
                           width={32}
                           height={32}

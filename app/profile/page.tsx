@@ -24,6 +24,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRecipeStore } from "@/store/use-recipe-store";
 import { useRealTimeLikedRecipes } from "@/store/recipe-interactions";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,11 +49,17 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-4 border-main">
                 <AvatarImage
-                  src={profile.image ?? undefined}
+                  src={profile.image ?? "/images/default-profile.jpg"}
                   alt={profile.name || "Profile"}
                 />
                 <AvatarFallback>
-                  {profile.name?.[0]?.toUpperCase() || "U"}
+                  <Image
+                    src="/images/default-avatar.jpg"
+                    alt={profile.name || "User"}
+                    width={32}
+                    height={32}
+                    priority
+                  />
                 </AvatarFallback>
               </Avatar>
               <div>

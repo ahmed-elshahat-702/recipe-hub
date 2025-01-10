@@ -110,14 +110,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <Link href={`/recipes/${recipe._id}`} className={cn("block")}>
           <div className="aspect-video relative">
             <Image
-              src={recipe.images?.[0] || "/images/recipe-placeholder.png"}
+              src={recipe.images?.[0] || "/images/recipe-placeholder.jpg"}
               alt={recipe.title}
               fill
               className="object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/recipe-placeholder.png";
-              }}
             />
           </div>
         </Link>
@@ -142,7 +138,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   src={
                     recipe.isAnonymous
                       ? "/images/anonymous-avatar.png"
-                      : recipe?.author?.image || "/images/default-avatar.png"
+                      : recipe?.author?.image || "/images/default-avatar.jpg"
                   }
                   alt={
                     recipe.isAnonymous
@@ -151,10 +147,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   }
                   fill
                   className="object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/default-avatar.png";
-                  }}
                 />
               </div>
               <div className="flex items-center gap-1">
