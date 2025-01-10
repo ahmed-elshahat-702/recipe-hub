@@ -99,7 +99,7 @@ export function Navigation() {
                       />
                       <AvatarFallback>
                         <Image
-                          src="/default-avatar.png"
+                          src="/images/default-avatar.png"
                           alt={profile.name || "User"}
                           width={32}
                           height={32}

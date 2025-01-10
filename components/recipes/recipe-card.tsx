@@ -110,7 +110,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <Link href={`/recipes/${recipe._id}`} className={cn("block")}>
           <div className="aspect-video relative">
             <Image
-              src={recipe.images?.[0] || "/recipe-placeholder.png"}
+              src={recipe.images?.[0] || "/images/recipe-placeholder.png"}
               alt={recipe.title}
               fill
               className="object-cover"
@@ -141,8 +141,8 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                 <Image
                   src={
                     recipe.isAnonymous
-                      ? "/anonymous-avatar.png"
-                      : recipe?.author?.image || "/default-avatar.png"
+                      ? "/images/anonymous-avatar.png"
+                      : recipe?.author?.image || "/images/default-avatar.png"
                   }
                   alt={
                     recipe.isAnonymous

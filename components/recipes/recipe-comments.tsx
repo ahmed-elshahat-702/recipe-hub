@@ -414,7 +414,7 @@ export function RecipeComments({
                     />
                     <AvatarFallback>
                       <Image
-                        src="/default-avatar.png"
+                        src="/images/default-avatar.png"
                         alt={comment.user.name || "User"}
                         width={32}
                         height={32}
@@ -613,7 +613,7 @@ export function RecipeComments({
                           />
                           <AvatarFallback>
                             <Image
-                              src="/default-avatar.png"
+                              src="/images/default-avatar.png"
                               alt={reply.user.name || "User"}
                               width={32}
                               height={32}

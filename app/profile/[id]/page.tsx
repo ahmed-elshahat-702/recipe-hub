@@ -127,7 +127,7 @@ export default function UserProfile({
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-shrink-0">
               <Image
-                src={user.image || "/default-avatar.jpg"}
+                src={user.image || "/images/default-avatar.jpg"}
                 alt={user.name}
                 width={128}
                 height={128}

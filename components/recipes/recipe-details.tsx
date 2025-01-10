@@ -65,7 +65,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
             ) : (
               <div className="relative h-44 sm:h-64">
                 <Image
-                  src={recipe?.images?.[0] ?? "/placeholder-image.jpg"}
+                  src={recipe?.images?.[0] ?? "/images/placeholder-image.jpg"}
                   alt={`${recipe.title} - Image`}
                   fill
                   className="w-full h-full rounded"
@@ -163,7 +163,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
               >
                 <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
                   <Image
-                    src={recipe.author.image || "/default-avatar.jpg"}
+                    src={recipe.author.image || "/images/default-avatar.jpg"}
                     alt={recipe.author.name}
                     fill
                     className="object-cover"
