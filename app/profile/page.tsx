@@ -108,9 +108,13 @@ export default function ProfilePage() {
       <Tabs defaultValue="myRecipes" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="myRecipes">
-            My Recipes ({profileRecipes.length})
+            My Recipes (
+            <span className="text-main mx-1">{profileRecipes.length}</span>)
           </TabsTrigger>
-          <TabsTrigger value="likedRecipes">Liked Recipes</TabsTrigger>
+          <TabsTrigger value="likedRecipes">
+            Liked Recipes (
+            <span className="text-main mx-1">{likedRecipes.length}</span>)
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="myRecipes">

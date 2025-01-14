@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useProfile } from "@/hooks/use-profile";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   image: z.string().url("Please enter a valid URL for the image.").optional(),
@@ -85,24 +86,15 @@ export function EditProfileDialog() {
       } else if (actualFile) {
         const formData = new FormData();
         formData.append("file", actualFile);
-        formData.append(
-          "upload_preset",
-          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ""
-        );
 
-        const imgResponse = await axios.post(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-
-        imageUrl = imgResponse.data.secure_url;
+        const imgResponse = await axios.post("/api/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        imageUrl = imgResponse.data.result.secure_url;
       }
 
       const profileData = { ...values, image: imageUrl };
-      await updateProfile(profileData);
+      updateProfile(profileData);
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
@@ -191,12 +183,11 @@ export function EditProfileDialog() {
                             render={({ field }) => (
                               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                 <FormControl>
-                                  <input
-                                    type="checkbox"
+                                  <Checkbox
                                     checked={field.value}
-                                    onChange={(e) => {
-                                      field.onChange(e.target.checked);
-                                      if (e.target.checked) {
+                                    onCheckedChange={(checked) => {
+                                      field.onChange(checked);
+                                      if (checked) {
                                         setActualFile(null);
                                       }
                                     }}
