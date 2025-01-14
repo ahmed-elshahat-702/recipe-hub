@@ -228,19 +228,13 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
           description: "Please wait while we upload your images.",
         });
 
-        const uploadPromises = actualFiles.map((file) => {
+        const uploadPromises = actualFiles.map(async (file) => {
           const formData = new FormData();
           formData.append("file", file);
-          formData.append(
-            "upload_preset",
-            process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ""
-          );
 
-          return axios.post(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-          );
+          return await axios.post("/api/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         });
 
         const responses = await Promise.all(uploadPromises);
@@ -372,9 +366,7 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
                 }`}
               >
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div
-                  className="mt-4 flex justify-center text-sm text-gray-600"
-                >
+                <div className="mt-4 flex justify-center text-sm text-gray-600">
                   <label
                     className={`relative cursor-pointer rounded-md bg-white font-medium ${
                       imageUrls.length + previewUrls.length >= MAX_IMAGES
@@ -759,7 +751,9 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
               <div className="space-y-1 leading-none">
                 <FormLabel>Share Anonymously</FormLabel>
                 <FormDescription>
-                  Your recipe will be displayed as anonymous to other users, but you'll still be able to edit, delete, and view it in your profile
+                  Your recipe will be displayed as anonymous to other users, but
+                  you'll still be able to edit, delete, and view it in your
+                  profile
                 </FormDescription>
               </div>
             </FormItem>
