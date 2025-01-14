@@ -65,14 +65,22 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
-    await deleteRecipe(recipe._id);
-    setShowDeleteDialog(false);
-    toast({
-      title: "Recipe deleted",
-      description: "Your recipe has been deleted successfully.",
-    });
-    router.refresh();
-    setIsDeleting(false);
+    try {
+      await deleteRecipe(recipe._id);
+      setShowDeleteDialog(false);
+      toast({
+        title: "Recipe deleted",
+        description: "Your recipe has been deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete recipe",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -143,7 +151,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               </div>
             ) : (
               <Link
-                href={isAuthor ? "/profile" : `/profile/${recipe?.author?._id}`}
+                href={isAuthor ? "/profile" : `/user/${recipe?.author?._id}`}
                 className="flex items-center gap-2 text-main hover:text-mainHover"
               >
                 <div className="relative h-6 w-6 rounded-full overflow-hidden border-2 border-main">
@@ -181,7 +189,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
               Delete
             </Button>
           </DialogFooter>
