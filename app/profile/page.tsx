@@ -49,16 +49,16 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-4 border-main">
                 <AvatarImage
-                  src={profile.image ?? "/images/default-profile.jpg"}
+                  src={profile.image ?? "/images/default-avatar.png"}
                   alt={profile.name || "Profile"}
                 />
                 <AvatarFallback>
                   <Image
-                    src="/images/default-avatar.jpg"
+                    src="/images/default-avatar.png"
                     alt={profile.name || "User"}
                     width={80}
                     height={80}
-                    className="w-full h-full"
+                    className="object-cover"
                     priority
                   />
                 </AvatarFallback>

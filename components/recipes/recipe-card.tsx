@@ -148,7 +148,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               >
                 <div className="relative h-6 w-6 rounded-full overflow-hidden border-2 border-main">
                   <Image
-                    src={recipe?.author?.image || "/images/default-avatar.jpg"}
+                    src={recipe?.author?.image || "/images/default-avatar.png"}
                     alt={recipe?.author?.name || "Anonymous"}
                     fill
                     className="object-cover bg-secondary"

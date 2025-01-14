@@ -394,190 +394,185 @@ export function RecipeComments({
           <p className="text-muted-foreground text-center">No comments yet</p>
         ) : (
           comments.map((comment) => (
-            <div>
-              <div
-                key={comment._id}
-                className="bg-card rounded-lg border border-main/10 p-4 shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  {/* Avatar */}
-                  <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
-                    <AvatarImage
-                      src={comment.user.image || "/images/default-avatar.jpg"}
+            <div
+              key={comment._id}
+              className="bg-card rounded-lg border border-main/10 p-4 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                {/* Avatar */}
+                <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
+                  <AvatarImage
+                    src={comment.user.image || "/images/default-avatar.png"}
+                    alt={comment.user.name || "User"}
+                  />
+                  <AvatarFallback>
+                    <Image
+                      src="/images/default-avatar.png"
                       alt={comment.user.name || "User"}
+                      width={32}
+                      height={32}
+                      priority
+                      className="object-cover"
                     />
-                    <AvatarFallback>
-                      <Image
-                        src="/images/default-avatar.jpg"
-                        alt={comment.user.name || "User"}
-                        width={32}
-                        height={32}
-                        priority
-                      />
-                    </AvatarFallback>
-                  </Avatar>
+                  </AvatarFallback>
+                </Avatar>
 
-                  {/* User Info and Comment */}
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="max-sm:flex-col flex sm:items-center sm:gap-2 text-sm sm:text-base">
-                        <Link
-                          href={
-                            recipe?.author?._id === actualUser?._id
-                              ? "/profile"
-                              : `/profile/${recipe?.author?._id}`
-                          }
-                          className="font-semibold text-main hover:text-mainHover"
-                        >
-                          {comment.user.name}
-                        </Link>
-                        <span className="text-xs sm:text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(comment.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
-                      </div>
-
-                      {/* Edit and Delete Buttons */}
-                      {canEditComment(comment.user._id) && (
-                        <div className="flex gap-2">
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            disabled={isLoading}
-                            className="h-6 w-6 sm:h-8 sm:w-8"
-                            onClick={() => {
-                              setEditingComment(comment._id);
-                              setEditCommentContent(comment.content);
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                size="icon"
-                                variant="destructive"
-                                disabled={isLoading}
-                                className="h-6 w-6 sm:h-8 sm:w-8"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Delete Comment
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this comment?
-                                  This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-destructive hover:bg-destructive/90"
-                                  onClick={() =>
-                                    handleDeleteComment(comment._id)
-                                  }
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      )}
+                {/* User Info and Comment */}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="max-sm:flex-col flex sm:items-center sm:gap-2 text-sm sm:text-base">
+                      <Link
+                        href={
+                          recipe?.author?._id === actualUser?._id
+                            ? "/profile"
+                            : `/profile/${recipe?.author?._id}`
+                        }
+                        className="font-semibold text-main hover:text-mainHover"
+                      >
+                        {comment.user.name}
+                      </Link>
+                      <span className="text-xs sm:text-sm text-muted-foreground">
+                        {formatDistanceToNow(new Date(comment.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
                     </div>
 
-                    {/* Comment Content */}
-                    {editingComment === comment._id ? (
-                      <div className="mt-2 space-y-2">
-                        <Textarea
-                          value={editCommentContent}
-                          onChange={(e) =>
-                            setEditCommentContent(e.target.value)
-                          }
-                          className="min-h-[60px]"
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleEditComment(comment._id)}
-                            disabled={isLoading}
-                            className="bg-main hover:bg-mainHover"
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setEditingComment(null);
-                              setEditCommentContent("");
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="mt-2 text-sm sm:text-base">
-                        {comment.content}
-                      </p>
-                    )}
-
-                    {/* Reply Button */}
-                    {session && !editingComment && (
-                      <div className="mt-2">
+                    {/* Edit and Delete Buttons */}
+                    {canEditComment(comment.user._id) && (
+                      <div className="flex gap-2">
                         <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-main hover:text-mainHover"
+                          size="icon"
+                          variant="secondary"
+                          disabled={isLoading}
+                          className="h-6 w-6 sm:h-8 sm:w-8"
                           onClick={() => {
-                            setReplyingTo(comment._id);
-                            setReplyContent("");
+                            setEditingComment(comment._id);
+                            setEditCommentContent(comment.content);
                           }}
                         >
-                          Reply
+                          <Edit className="h-4 w-4" />
                         </Button>
-                      </div>
-                    )}
 
-                    {/* Reply Input */}
-                    {replyingTo === comment._id && (
-                      <div className="mt-2 space-y-2">
-                        <Textarea
-                          placeholder="Write a reply..."
-                          value={replyContent}
-                          onChange={(e) => setReplyContent(e.target.value)}
-                          className="min-h-[60px]"
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleReply(comment._id)}
-                            disabled={isLoading || !replyContent.trim()}
-                            className="bg-main hover:bg-mainHover"
-                          >
-                            Reply
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setReplyingTo(null);
-                              setReplyContent("");
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              disabled={isLoading}
+                              className="h-6 w-6 sm:h-8 sm:w-8"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Delete Comment
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this comment?
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive hover:bg-destructive/90"
+                                onClick={() => handleDeleteComment(comment._id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     )}
                   </div>
+
+                  {/* Comment Content */}
+                  {editingComment === comment._id ? (
+                    <div className="mt-2 space-y-2">
+                      <Textarea
+                        value={editCommentContent}
+                        onChange={(e) => setEditCommentContent(e.target.value)}
+                        className="min-h-[60px]"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleEditComment(comment._id)}
+                          disabled={isLoading}
+                          className="bg-main hover:bg-mainHover"
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingComment(null);
+                            setEditCommentContent("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm sm:text-base">
+                      {comment.content}
+                    </p>
+                  )}
+
+                  {/* Reply Button */}
+                  {session && !editingComment && (
+                    <div className="mt-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-main hover:text-mainHover"
+                        onClick={() => {
+                          setReplyingTo(comment._id);
+                          setReplyContent("");
+                        }}
+                      >
+                        Reply
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Reply Input */}
+                  {replyingTo === comment._id && (
+                    <div className="mt-2 space-y-2">
+                      <Textarea
+                        placeholder="Write a reply..."
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        className="min-h-[60px]"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleReply(comment._id)}
+                          disabled={isLoading || !replyContent.trim()}
+                          className="bg-main hover:bg-mainHover"
+                        >
+                          Reply
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyContent("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Render Replies */}
@@ -597,17 +592,18 @@ export function RecipeComments({
                         <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
                           <AvatarImage
                             src={
-                              reply.user.image || "/images/default-avatar.jpg"
+                              reply.user.image || "/images/default-avatar.png"
                             }
                             alt={reply.user.name || "User"}
                           />
                           <AvatarFallback>
                             <Image
-                              src="/images/default-avatar.jpg"
+                              src="/images/default-avatar.png"
                               alt={reply.user.name || "User"}
                               width={32}
                               height={32}
                               priority
+                              className="object-cover"
                             />
                           </AvatarFallback>
                         </Avatar>

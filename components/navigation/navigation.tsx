@@ -88,16 +88,17 @@ export function Navigation() {
                   >
                     <Avatar className="h-8 w-8 border-2 border-main">
                       <AvatarImage
-                        src={profile.image || "/images/default-avatar.jpg"}
+                        src={profile.image || "/images/default-avatar.png"}
                         alt={profile.name || "User"}
                       />
                       <AvatarFallback>
                         <Image
-                          src="/images/default-avatar.jpg"
+                          src="/images/default-avatar.png"
                           alt={profile.name || "User"}
                           width={32}
                           height={32}
                           priority
+                          className="object-cover"
                         />
                       </AvatarFallback>
                     </Avatar>

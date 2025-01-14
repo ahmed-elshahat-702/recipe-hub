@@ -176,10 +176,9 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
                 >
                   <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
                     <Image
-                      src={recipe.author.image || "/images/default-avatar.jpg"}
+                      src={recipe.author.image || "/images/default-avatar.png"}
                       alt={recipe.author.name}
                       fill
-                      className="object-cover"
                     />
                   </div>
                   <span className="text-sm font-medium">
