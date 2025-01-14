@@ -741,7 +741,7 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
           control={form.control}
           name="isAnonymous"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-dashed border-main rounded p-4">
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 border border-dashed border-main rounded p-4">
               <FormControl>
                 <Checkbox
                   checked={field.value}
