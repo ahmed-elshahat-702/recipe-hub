@@ -34,7 +34,9 @@ interface RecipeStore {
   filterAndSortRecipes: () => void;
   setPage: (page: number) => void;
   profileRecipes: Recipe[];
+  anyUserRecipes: Recipe[];
   fetchProfileRecipes: (userId: string) => Promise<void>;
+  fetchAnyUserRecipes: (userId: string) => Promise<void>;
   addProfileRecipe: (recipe: Recipe) => void;
   removeProfileRecipe: (recipeId: string) => void;
 }
@@ -84,6 +86,7 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   },
 
   profileRecipes: [],
+  anyUserRecipes: [],
 
   fetchRecipes: async () => {
     set({ isLoading: true, error: null });
@@ -135,14 +138,17 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   },
 
   deleteRecipe: async (recipeId: string) => {
-    // Optimistically update UI
+    // Optimistically update UI for all recipe lists
     const previousRecipes = get().recipes;
     const previousFilteredRecipes = get().filteredRecipes;
+    const previousProfileRecipes = get().profileRecipes;
 
-    // Update both recipes and filteredRecipes arrays
     set({
       recipes: previousRecipes.filter((recipe) => recipe._id !== recipeId),
       filteredRecipes: previousFilteredRecipes.filter(
+        (recipe) => recipe._id !== recipeId
+      ),
+      profileRecipes: previousProfileRecipes.filter(
         (recipe) => recipe._id !== recipeId
       ),
     });
@@ -150,7 +156,6 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     try {
       // Delete recipe
       await axios.delete(`/api/recipes/${recipeId}`);
-
       // Remove recipe from user's createdRecipes
       await axios.delete(`/api/user/recipes/${recipeId}`);
     } catch (error) {
@@ -158,6 +163,7 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       set({
         recipes: previousRecipes,
         filteredRecipes: previousFilteredRecipes,
+        profileRecipes: previousProfileRecipes,
       });
       console.error("Error deleting recipe:", error);
       set({ error: "Failed to delete recipe" });
@@ -252,9 +258,8 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   fetchProfileRecipes: async (userId) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`/api/user/${userId}`);
-      const profileRecipes: Recipe[] =
-        response.data?.user?.createdRecipes ?? [];
+      const response = await axios.get(`/api/user/${userId}/recipes`);
+      const profileRecipes: Recipe[] = response.data?.createdRecipes ?? [];
 
       // Sort recipes by creation date (newest first)
       profileRecipes.sort(
@@ -267,6 +272,29 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       console.error("Failed to fetch profile recipes:", error);
       set({
         profileRecipes: [],
+        isLoading: false,
+        error: "Failed to fetch profile recipes",
+      });
+    }
+  },
+
+  fetchAnyUserRecipes: async (userId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.get(`/api/user/${userId}/recipes`);
+      const anyUserRecipes: Recipe[] = response.data?.createdRecipes ?? [];
+
+      // Sort recipes by creation date (newest first)
+      anyUserRecipes.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      set({ anyUserRecipes, isLoading: false });
+    } catch (error) {
+      console.error("Failed to fetch profile recipes:", error);
+      set({
+        anyUserRecipes: [],
         isLoading: false,
         error: "Failed to fetch profile recipes",
       });

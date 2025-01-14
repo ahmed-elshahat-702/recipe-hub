@@ -425,7 +425,7 @@ export function RecipeComments({
                         href={
                           recipe?.author?._id === actualUser?._id
                             ? "/profile"
-                            : `/profile/${recipe?.author?._id}`
+                            : `/user/${recipe?.author?._id}`
                         }
                         className="font-semibold text-main hover:text-mainHover"
                       >
@@ -617,7 +617,7 @@ export function RecipeComments({
                                 href={
                                   reply?.user?._id === actualUser?._id
                                     ? "/profile"
-                                    : `/profile/${reply?.user?._id}`
+                                    : `/user/${reply?.user?._id}`
                                 }
                                 className="font-semibold text-main hover:text-mainHover"
                               >

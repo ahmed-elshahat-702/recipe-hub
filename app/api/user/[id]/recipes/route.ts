@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
 import { Recipe } from "@/lib/db/models/Recipe";
+import { User } from "@/lib/db/models/User";
+import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
@@ -11,20 +11,24 @@ export async function GET(
     const { id } = await context.params;
     await connectDB();
 
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate({
+      path: "createdRecipes",
+      model: Recipe,
+      populate: {
+        path: "author",
+      },
+    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      user: {
-        _id: user._id,
-        name: user.name,
-        image: user.image,
-        createdAt: user.createdAt,
+    return NextResponse.json(
+      {
+        createdRecipes: user.createdRecipes,
       },
-    });
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
