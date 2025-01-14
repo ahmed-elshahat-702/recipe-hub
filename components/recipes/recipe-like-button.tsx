@@ -61,6 +61,7 @@ export function RecipeLikeButton({
   const handleLike = async () => {
     if (!session) {
       toast({
+        variant: "destructive",
         title: "Please log in",
         description: "You must be logged in to like recipes",
       });

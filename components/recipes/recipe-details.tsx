@@ -170,7 +170,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
                   href={
                     recipe.author._id === user?._id
                       ? "/profile"
-                      : `/profile/${recipe.author._id}`
+                      : `/user/${recipe.author._id}`
                   }
                   className="inline-flex items-center space-x-2 text-main hover:text-mainHover"
                 >
