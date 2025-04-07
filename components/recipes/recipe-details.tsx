@@ -121,14 +121,18 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
               Ingredients
             </h2>
             <ul className="space-y-2 text-sm">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="w-16 font-medium">
-                    {ingredient.amount} {ingredient.unit}
-                  </span>
-                  <span>{ingredient.name}</span>
-                </li>
-              ))}
+            {recipe.ingredients && recipe.ingredients.length > 0 ? (
+                recipe.ingredients.map((ingredient, index) => (
+                  <li key={index} className="flex items-center">
+                    <span className="w-16 font-medium">
+                      {ingredient.amount} {ingredient.unit}
+                    </span>
+                    <span>{ingredient.name}</span>
+                  </li>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No ingredients</p>
+              )}
             </ul>
           </section>
 
@@ -196,12 +200,18 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
       <section className="w-full bg-card rounded-lg shadow-sm p-4 border border-main/20">
         <h2 className="text-lg font-semibold mb-3 text-main">Instructions</h2>
         <ol className="space-y-3 text-sm">
-          {recipe.instructions.map((instruction, index) => (
-            <li key={index} className="flex">
-              <span className="font-bold text-main mr-3">{index + 1}.</span>
-              <p>{instruction}</p>
-            </li>
-          ))}
+        {recipe.instructions && recipe.instructions.length > 0 ? (
+                recipe.instructions.map((instruction, index) => (
+                  <li key={index} className="flex items-center">
+                    <span className="w-16 font-medium">
+                      {index + 1}.
+                    </span>
+                    <span>{instruction}</span>
+                  </li>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No instructions</p>
+              )}
         </ol>
       </section>
       {/* Comments Section */}
