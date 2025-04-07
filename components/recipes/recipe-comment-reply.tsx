@@ -21,6 +21,7 @@ import axios from "axios";
 import { useRecipeInteractions } from "@/store/recipe-interactions";
 import Link from "next/link";
 import { comment } from "postcss";
+import Image from "next/image";
 
 export interface RecipeCommentReplyProps {
   reply: {
@@ -136,14 +137,21 @@ const RecipeCommentReply = ({
   return (
     <div className="flex gap-4">
       <Avatar>
-        <AvatarImage src={reply.user.image} />
-        <AvatarFallback>
-          {reply.user.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")}
-        </AvatarFallback>
-      </Avatar>
+                  <AvatarImage
+                    src={reply.user.image || "/images/default-avatar.png"}
+                    alt={reply.user.name || "User"}
+                  />
+                  <AvatarFallback>
+                    <Image
+                      src="/images/default-avatar.png"
+                      alt={reply.user.name || "User"}
+                      width={32}
+                      height={32}
+                      priority
+                      className="object-cover"
+                    />
+                  </AvatarFallback>
+                </Avatar>
       <div className="flex-1">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">

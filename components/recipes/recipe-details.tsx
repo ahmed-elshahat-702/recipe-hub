@@ -188,7 +188,6 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
                   <span className="text-sm font-medium">
                     {recipe.author.name}
                   </span>
-                  <SquareArrowOutUpRight className="h-3 w-3 " />
                 </Link>
               )
             ) : (
