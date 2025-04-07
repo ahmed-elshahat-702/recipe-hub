@@ -357,7 +357,7 @@ export function RecipeComments({
       <div className="space-y-4">
         <h3 className="text-lg text-main font-semibold">Comments</h3>
 
-        {Array.from({ length: 5 }, (_, index) => (
+        {Array.from({ length: 3 }, (_, index) => (
           <RecipeCommentSkeleton key={index} />
         ))}
       </div>

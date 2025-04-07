@@ -152,7 +152,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
           </section>
           <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
             <h2 className="text-lg font-semibold mb-3 text-main">Author</h2>
-            {recipe.author && user ? (
+            {recipe.author ? (
               recipe.isAnonymous ? (
                 <div className="flex items-center space-x-2 text-main">
                   <div className="relative w-6 h-6 rounded-full overflow-hidden border-2 border-main">
@@ -168,7 +168,7 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
               ) : (
                 <Link
                   href={
-                    recipe.author._id === user?._id
+                    user && recipe.author._id === user?._id
                       ? "/profile"
                       : `/user/${recipe.author._id}`
                   }

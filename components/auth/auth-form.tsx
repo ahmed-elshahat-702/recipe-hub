@@ -120,14 +120,32 @@ export function AuthForm({ variant }: AuthFormProps) {
     setIsLoading(true);
     try {
       const result = await signIn("google", { callbackUrl, redirect: false });
-      if (result?.error === "AccessDenied") {
+
+      if (!result) {
+        throw new Error("Authentication failed");
+      }
+
+      if (result.error === "AccessDenied") {
         toast({
-          title: "No Account Selected",
+          title: "Access Denied",
           description: "Please select an account or create a new one.",
+          variant: "destructive",
         });
-      } else if (result?.url) {
+        return;
+      }
+
+      if (result.error === "OAuthSignin") {
+        toast({
+          title: "Connection Failed",
+          description: "Could not connect to Google. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (result.url) {
         router.push(result.url);
-      } else {
+      } else if (result.ok) {
         router.push(callbackUrl);
         toast({
           title: "Success",
@@ -137,9 +155,13 @@ export function AuthForm({ variant }: AuthFormProps) {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `Failed to sign in with Google. Please try again. ${error}`,
+        title: "Authentication Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to sign in with Google",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
