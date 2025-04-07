@@ -1,17 +1,7 @@
 "use client";
 import React from "react";
 
-import Image from "next/image";
-import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { type Recipe } from "@/lib/types/recipe";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { Edit, SquareArrowOutUpRight, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { useRecipeStore } from "@/store/use-recipe-store";
 import {
   Dialog,
   DialogContent,
@@ -20,9 +10,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { type Recipe } from "@/lib/types/recipe";
 import { cn } from "@/lib/utils";
-import { RecipeLikeButton } from "./recipe-like-button";
+import { useRecipeStore } from "@/store/use-recipe-store";
 import { useUserStore } from "@/store/use-user-store";
+import { Edit, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { RecipeLikeButton } from "./recipe-like-button";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -166,7 +166,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                   <span className="text-sm">
                     {recipe?.author?.name || "Anonymous"}
                   </span>
-                  <SquareArrowOutUpRight className="h-3 w-3 ml-1" />
                 </div>
               </Link>
             )}
