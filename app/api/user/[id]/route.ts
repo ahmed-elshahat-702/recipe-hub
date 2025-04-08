@@ -21,6 +21,7 @@ export async function GET(
       user: {
         _id: user._id,
         name: user.name,
+        bio: user.bio,
         image: user.image,
         createdAt: user.createdAt,
       },
