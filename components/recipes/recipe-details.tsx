@@ -94,22 +94,22 @@ export function RecipeDetails({ recipe }: { recipe: Recipe }) {
 
         <div className="space-y-6">
           <section className="bg-card rounded-lg shadow-sm p-4 border border-main/20">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center">
+            <div className="flex items-center justify-center gap-8 md:gap-6">
+              <div className="flex flex-col items-center ">
                 <Clock className="h-6 w-6 text-main mb-1" />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-center">
                   {recipe.cookingTime} mins
                 </span>
               </div>
               <div className="flex flex-col items-center">
                 <Users className="h-6 w-6 text-main mb-1" />
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-center">
                   {recipe.servings} servings
                 </span>
               </div>
               <div className="flex flex-col items-center">
                 <ChefHat className="h-6 w-6 text-main mb-1" />
-                <span className="text-sm font-medium capitalize">
+                <span className="text-sm font-medium text-center">
                   {recipe.difficulty}
                 </span>
               </div>
