@@ -238,7 +238,9 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
           
           // Check if the response contains the secure_url directly or in a result property
           const imageUrl = response.data.secure_url || 
-                           (response.data.result && response.data.result.secure_url);
+                           (response.data.result && response.data.result.secure_url) ||
+                           response.data.url ||
+                           (response.data.result && response.data.result.url);
                            
           if (!imageUrl) {
             console.error("Invalid upload response:", response.data);

@@ -87,10 +87,13 @@ export function EditProfileDialog() {
         const formData = new FormData();
         formData.append("file", actualFile);
 
-        const imgResponse = await axios.post("/api/upload", formData, {
+        const response = await axios.post("/api/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        imageUrl = imgResponse.data.result.secure_url;
+        imageUrl = response.data.secure_url || 
+        (response.data.result && response.data.result.secure_url) ||
+        response.data.url ||
+        (response.data.result && response.data.result.url);
       }
 
       const profileData = { ...values, image: imageUrl };
