@@ -1,13 +1,7 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ArrowLeftIcon, CookingPot, Loader2, UserIcon } from "lucide-react";
-import axios from "axios";
 import { RecipeCard } from "@/components/recipes/recipe-card";
-import { UserCard } from "@/components/user/user-card";
-import { Recipe } from "@/lib/types/recipe";
-import { useToast } from "@/hooks/use-toast";
+import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -17,9 +11,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import RecipeCardSkeleton from "@/components/recipes/recipe-card-skeleton";
+import { UserCard } from "@/components/user/user-card";
+import { useToast } from "@/hooks/use-toast";
 import { useRecipeStore } from "@/store/use-recipe-store";
-import Link from "next/link";
+import axios from "axios";
+import { ArrowLeftIcon, Loader2, UserIcon } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserProfile {
   _id: string;
@@ -39,6 +37,9 @@ export default function UserProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { anyUserRecipes, fetchAnyUserRecipes } = useRecipeStore();
+  
+  // Filter out anonymous recipes
+  const filteredUserRecipes = anyUserRecipes.filter(recipe => !recipe.isAnonymous);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -104,7 +105,7 @@ export default function UserProfilePage() {
           name: user.name,
           bio: user.bio,
         }}
-        anyUserRecipes={anyUserRecipes}
+        anyUserRecipes={filteredUserRecipes}
         joinedDate={joinedDate}
       />
 
@@ -122,11 +123,11 @@ export default function UserProfilePage() {
             ))}
           </div>
         ) : (
-          anyUserRecipes &&
-          (anyUserRecipes.length > 0 ? (
+          filteredUserRecipes &&
+          (filteredUserRecipes.length > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {anyUserRecipes
+                {filteredUserRecipes
                   .slice((currentPage - 1) * 8, currentPage * 8)
                   .map((recipe) => (
                     <RecipeCard key={recipe._id} recipe={recipe} />
@@ -134,7 +135,7 @@ export default function UserProfilePage() {
               </div>
 
               {/* Pagination */}
-              {anyUserRecipes.length > 8 && (
+              {filteredUserRecipes.length > 8 && (
                 <Pagination className="mt-8">
                   <PaginationContent>
                     <PaginationItem>
@@ -152,7 +153,7 @@ export default function UserProfilePage() {
                       />
                     </PaginationItem>
                     {Array.from({
-                      length: Math.ceil(anyUserRecipes.length / 8),
+                      length: Math.ceil(filteredUserRecipes.length / 8),
                     }).map((_, index) => {
                       const pageNumber = index + 1;
                       return (
