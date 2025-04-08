@@ -116,56 +116,11 @@ export function AuthForm({ variant }: AuthFormProps) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
-    try {
-      const result = await signIn("google", { callbackUrl, redirect: false });
-
-      if (!result) {
-        throw new Error("Authentication failed");
-      }
-
-      if (result.error === "AccessDenied") {
-        toast({
-          title: "Access Denied",
-          description: "Please select an account or create a new one.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (result.error === "OAuthSignin") {
-        toast({
-          title: "Connection Failed",
-          description: "Could not connect to Google. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (result.url) {
-        router.push(result.url);
-      } else if (result.ok) {
-        router.push(callbackUrl);
-        toast({
-          title: "Success",
-          description: "Signed in successfully!",
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to sign in with Google",
-      });
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+    signIn("google", { callbackUrl }).finally(() => setIsLoading(false));
   };
+  
 
   const handleSignUp = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
