@@ -25,7 +25,8 @@ const categories = [
 const sortOptions = [
   { value: "latest", label: "Latest" },
   { value: "oldest", label: "Oldest" },
-  { value: "name", label: "Name" },
+  { value: "name-asc", label: "Name (A-Z)" },
+  { value: "name-desc", label: "Name (Z-A)" },
 ];
 
 export function RecipeFilters() {
@@ -93,7 +94,7 @@ export function RecipeFilters() {
             Sort By
           </label>
           <Select
-            onValueChange={(value: "latest" | "oldest" | "name") =>
+            onValueChange={(value: "latest" | "oldest" | "name-asc" | "name-desc") =>
               setSortBy(value)
             }
           >

@@ -21,11 +21,11 @@ interface RecipeStore {
   error: string | null;
   searchQuery: string;
   selectedCategory: string;
-  sortBy: "latest" | "oldest" | "name";
-  pagination: PaginationState;
+  sortBy: "latest" | "oldest" | "name-asc" | "name-desc";
+    pagination: PaginationState;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
-  setSortBy: (sortBy: "latest" | "oldest" | "name") => void;
+  setSortBy: (sortBy: "latest" | "oldest" | "name-asc" | "name-desc") => void;
   fetchRecipes: () => Promise<void>;
   fetchRecipeAuthor: (recipe: Recipe) => Promise<void>;
   createRecipe: (recipeData: any) => Promise<void>;
@@ -245,9 +245,11 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
           return (
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
-        case "name":
-          return a.title.localeCompare(b.title);
-        default:
+          case "name-asc":
+            return a.title.localeCompare(b.title);
+          case "name-desc":
+            return b.title.localeCompare(a.title);
+          default:
           return 0;
       }
     });
