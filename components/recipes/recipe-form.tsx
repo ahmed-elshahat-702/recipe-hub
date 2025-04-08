@@ -232,14 +232,29 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
           const formData = new FormData();
           formData.append("file", file);
 
-          return await axios.post("/api/upload", formData, {
+          const response = await axios.post("/api/upload", formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
+          
+          // Check if the response contains the secure_url directly or in a result property
+          const imageUrl = response.data.secure_url || 
+                           (response.data.result && response.data.result.secure_url);
+                           
+          if (!imageUrl) {
+            console.error("Invalid upload response:", response.data);
+            throw new Error("Failed to get image URL from upload response");
+          }
+          
+          return imageUrl;
         });
 
-        const responses = await Promise.all(uploadPromises);
-        const newImageUrls = responses.map((res) => res.data.secure_url);
-        uploadedImageUrls.push(...newImageUrls);
+        try {
+          const newImageUrls = await Promise.all(uploadPromises);
+          uploadedImageUrls.push(...newImageUrls);
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          throw new Error("Failed to upload one or more images");
+        }
       }
 
       const recipeData = { ...data, images: uploadedImageUrls };
@@ -260,6 +275,7 @@ export function RecipeForm({ initialData }: { initialData?: Recipe }) {
 
       router.push("/recipes");
     } catch (error) {
+      console.error("Form submission error:", error);
       toast({
         title: "Error",
         description: "Failed to submit recipe. Please try again.",

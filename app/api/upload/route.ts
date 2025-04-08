@@ -11,6 +11,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
+    
+    if (!file) {
+      return NextResponse.json(
+        { message: "No file provided" },
+        { status: 400 }
+      );
+    }
+    
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -22,15 +30,16 @@ export async function POST(request: Request) {
         },
         (error, result) => {
           if (error) reject(error);
-          resolve(result);
+          else resolve(result);
         }
       );
 
       uploadStream.end(buffer);
     });
 
-    return NextResponse.json({ result });
+    return NextResponse.json(result);
   } catch (error) {
+    console.error("Upload error:", error);
     return NextResponse.json(
       {
         message: "Failed to upload image",
